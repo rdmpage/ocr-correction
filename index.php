@@ -261,7 +261,7 @@ echo '<!--Adjust font sizes so that text fits within bounding boxes-->
  
 	<script>
 		/* grab edits */
-		var url = "http://localhost/~rpage/ocr-correction-o/edits.php?pageId=" + pageId;
+		var url = "/edits.php?pageId=" + pageId;
 		$.getJSON(url,
 			function(data){
 				if (data.status == 200) {
