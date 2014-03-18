@@ -48,7 +48,10 @@ function export_html_fragement_dom($page, $image_url='')
 
 		// handle edits
 		$ocr_line->setAttribute('onfocus', 'entering(this)');					
-		$ocr_line->setAttribute('onblur', 'leaving(this)');					
+		$ocr_line->setAttribute('onblur', 'leaving(this)');		
+		
+		// original OCR
+		$ocr_line->setAttribute('data-ocr', $line->text);					
 	
 		$ocr_line->appendChild($doc->createTextNode($line->text));
 	}
@@ -223,7 +226,8 @@ echo '<html>
 					type: "edit",
 					time: parseInt(timestamp10),
   					pageId: pageId,
-  					lineId: $(element).attr("id"),  					
+  					lineId: $(element).attr("id"),  
+  					ocr: $(element).attr("data-ocr"),
   					text: after_text
 				}, function(err, response) { });
 				
