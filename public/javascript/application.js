@@ -1,12 +1,12 @@
 /*global jQuery, window, document, self, alert, PouchDB */
-var OCR = (function($) {
+var OCRCorrection = (function($) {
 
   "use strict";
 
   var _private = {
 
     settings: {
-      edit_url : './edits.php?pageId=',
+      edit_url : './edit.php?pageId=',
       page_id : 0,
       page_width : 800,
       db: ""
@@ -56,8 +56,8 @@ var OCR = (function($) {
     },
 
     showPopUp: function(ele) {
-      var title = $(ele).prop("title"),
-          parts = title.split(" "),
+      var bbox = $(ele).data("bbox"),
+          parts = bbox.split(" "),
           clip = "rect(" + parts[2] + "px," + parts[3] + "px," + parts[4] + "px," + parts[1] + "px)",
           zoom = this.settings.page_width/(parts[3] - parts[1]),
           bottom =  $(ele).offset().top + $(ele).outerHeight(true);
@@ -101,11 +101,9 @@ var OCR = (function($) {
         url: this.settings.edit_url + this.settings.page_id,
         dataType: 'json',
         success: function(response) {
-          if (response.status === 200) {
-            $.each(response.results, function() {
-              $("#" + this.lineId).html(this.text);
-            });
-          }
+          $.each(response.rows, function() {
+            $("#" + this.key[2]).html(this.value);
+          });
         }
       });
     }
