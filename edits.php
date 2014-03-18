@@ -48,6 +48,4 @@ foreach ($response_obj->rows as $row)
 
 api_output($obj, $callback);
 
-
-
 ?>

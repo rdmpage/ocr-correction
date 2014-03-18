@@ -1,0 +1,51 @@
+body {
+   margin:0px;
+   padding:0px;
+   background-color: #E9E9E9;
+}
+
+.ocr_page {
+	background-color: white;
+	/* box-shadow:2px 2px 10px #aaaaaa; */
+	/* border:1px solid black; */
+	position:relative;
+	/* left: 20px;
+	top: 20px; */
+	width: 800px;
+	height: 1316.9313957418px;
+}
+
+/* http://blog.vjeux.com/2011/css/css-one-line-justify.html */
+/* This ensures single line of text is justified */
+.ocr_line {
+  text-align: justify;
+}
+.ocr_line:after {
+  content: "";
+  display: inline-block;
+  width: 100%;
+}
+
+#ocr_image_container{
+	position:absolute;
+	display:none;
+	border:1px solid black;
+	width:800px;
+	z-index:100;
+	background-color:white;
+}
+
+#ocr_image_container img{
+	position:absolute;
+	z-index:100;
+	background-color:white;
+}
+
+#ocr_edit_history {
+	position:absolute;
+	top:0px;
+	left:800px;
+	width:200px;
+	height:100%;
+	border:1px solid red;
+}
