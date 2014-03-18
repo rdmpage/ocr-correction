@@ -221,9 +221,9 @@ function extract_font_sizes($page)
 				$count++;
 				$last_baseline = $line->fontmetrics->baseline;
 				
-				if ($line->fontmetrics->ascender) { $fontmetrics->ascender[] = $line->fontmetrics->ascender; }
-				if ($line->fontmetrics->capheight) { $fontmetrics->capheight[] = $line->fontmetrics->capheight; }
-				if ($line->fontmetrics->descender) { $fontmetrics->descender[] = $line->fontmetrics->descender; }
+				if (isset($line->fontmetrics->ascender)) { $fontmetrics->ascender[] = $line->fontmetrics->ascender; }
+				if (isset($line->fontmetrics->capheight)) { $fontmetrics->capheight[] = $line->fontmetrics->capheight; }
+				if (isset($line->fontmetrics->descender)) { $fontmetrics->descender[] = $line->fontmetrics->descender; }
 			}
 			//print_r($fontmetrics);
 			

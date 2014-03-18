@@ -92,7 +92,7 @@ function djvu_line_coordinates(&$xpath, $node, &$line_text)
 {
 	$line_bbox = array(100000,0,0,100000);
 	$line_text = '';
-	
+	$word_count = 0;
 	$words = $xpath->query ('WORD', $node);
 	foreach($words as $word)
 	{
