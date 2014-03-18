@@ -5,6 +5,8 @@
 require_once (dirname(__FILE__) . '/djvu/djvu_structure.php');
 
 
+
+
 //--------------------------------------------------------------------------------------------------
 /*
 	Create HTML with hOCR for one page
@@ -25,7 +27,6 @@ function export_html_fragement_dom($page, $image_url='')
 		'bbox 0 0 ' . ($scale * $page->page->bbox[2]) . ' ' . ($scale * $page->page->bbox[1])
 		. '; image ' . $image_url
 		);
-	$ocr_page->setAttribute('style', 'font-family:serif;');
 
 	foreach ($page->lines as $line)
 	{
@@ -33,6 +34,7 @@ function export_html_fragement_dom($page, $image_url='')
 		$ocr_line = $ocr_page->appendChild($doc->createElement('div'));
 		
 		$ocr_line->setAttribute('id', $line->id);	
+
 		
 		$ocr_line->setAttribute('class', 'ocr_line');	
 
@@ -54,17 +56,16 @@ function export_html_fragement_dom($page, $image_url='')
 		$ocr_line->appendChild($doc->createTextNode($line->text));
 	}
 	
-	// Box to contain OCR image
+	// OCR image
 	$div = $ocr_page->appendChild($doc->createElement('div'));
 	$div->setAttribute('id', 'ocr_image_container');
-	$div->setAttribute('style', 'display:none;box-shadow: 4px 4px 4px rgba(64,64,64,0.5);position:absolute;top:0px;left:0px;border:1px solid rgb(192,192,192);width:100%;background:white;height:0px;');
 	
-	// OCR image (hidden)
-	$img = $ocr_page->appendChild($doc->createElement('img'));	
+	$div->setAttribute('style', 'position:absolute;display:none;border: 1px solid black;width:100%;background:white;');
+	
+	$img = $div->appendChild($doc->createElement('img'));	
 	$img->setAttribute('id', 'ocr_image');
-	$img->setAttribute('class', 'ocr_image');
 	$img->setAttribute('src', $image_url);
-	$img->setAttribute('style', 'left:0px;top:40px;position:absolute;display:none;');
+	$img->setAttribute('style', 'position:absolute;');
 	
 	$ocr_page->appendChild($doc->createComment('Adjust font sizes so that text fits within bounding boxes'));	
 
@@ -94,7 +95,7 @@ $PageID = 34570741;
 
 
 // LXV.—On a new Banded Mungoose from Somaliland
-//$PageID = 16002437;
+$PageID = 16002437;
 $PageID = 16002438;
 
 $xml_filename 	= 'examples/' . $PageID . '.xml';
@@ -125,19 +126,7 @@ echo '<html>
 <head>
 <meta charset="utf-8">
 <meta name="ocr-capabilities" content="ocr_carea ocr_line ocr_page ocr_par">
-
-			<!-- Le styles -->
-			<link href="assets/css/bootstrap.css" rel="stylesheet">
-			<link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
-		
-			<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-			<!--[if lt IE 9]>
-			  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-			<![endif]-->            
-
-
-<script src="js/jquery.js"></script>
-<style type="text/css">
+<script src="js/jquery.js"></script><style type="text/css">
 	body {
 	   margin:0px;
 	   padding:0px;
@@ -155,7 +144,6 @@ echo '<html>
 		height: 1316.9313957418px;
 	}
 	
-	
 	/* http://blog.vjeux.com/2011/css/css-one-line-justify.html */
 	/* This ensures single line of text is justified */
 	.ocr_line {
@@ -165,9 +153,7 @@ echo '<html>
 	  content: "";
 	  display: inline-block;
 	  width: 100%;
-	}
-
-	</style>
+	}</style>
 	
 	<script src="js/pouchdb-1.1.0.min.js"></script>
 	
@@ -203,25 +189,29 @@ echo '<html>
 			var parts = title.split(" ");
 	
 			// Clip to just this part of the image
-			var clip = "rect(" + parts[2] + "px, " + parts[3] + "px, " + parts[4] + "px, " + parts[1] + "px)";
+			var clip = "rect(" + parts[2] + "px," + parts[3] + "px," + parts[4] + "px," + parts[1] + "px)";
 			$("#ocr_image").css("clip", clip);
-			$("#ocr_image").show();
 	
-			/* Move image container */
-			$("#ocr_image_container").css("top", -parts[2] + "px");
+			// Move to image
+			$("#ocr_image").css("top", (-parts[2] + 10) + "px");
+			$("#ocr_image").css("left", -parts[1] + "px");
 	
-			// bottom of element (text line being edited)
+			var zoom = 800/(parts[3] - parts[1]);
+			$("#ocr_image").css("zoom", zoom);
+	
+			// bottom of element
 			var bottom =  $(element).offset().top + $(element).outerHeight(true);
-			
-			bottom -= 30; // adjust for toolbar height
 	
 			$("#ocr_image_container").css("top", bottom + "px");
-			$("#ocr_image_container").css("height",  (parts[4] - parts[2]) + 10 + "px");
+			$("#ocr_image_container").css("height",  zoom * (parts[4] - parts[2]) + 2 + "px");
+			
 			$("#ocr_image_container").show();
+	
+						
 		}
 
 		function leaving(element) {
-			//console.log($(element).html());
+			console.log($(element).html());
 			
 			var after_text = $(element).html();
 			
@@ -230,18 +220,7 @@ echo '<html>
 			
 				var html = $("#edits").html();
 			
-				//html += after_text + "<hr />";
-				
-				html += \'<div class="media">\';
-				html += \'  <a class="pull-left" href="#">\';
-    			html += \'    <img class="media-object" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjZWVlIj48L3JlY3Q+PHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMzIiIHk9IjMyIiBzdHlsZT0iZmlsbDojYWFhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjEycHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+NjR4NjQ8L3RleHQ+PC9zdmc+" alt="...">\';
-  				html += \'  </a>\';
-  				html += \'  <div class="media-body">\';
-    			html += \'    <h4 class="media-heading">User</h4>\';
-				html += after_text;
-				html += \'   </div>\';
-				html += \'</div>\';
-				html += \'<div style="clear:both;" />\';
+				html += after_text + "<hr />";
 			
 				$("#edits").html(html);
 				
@@ -276,46 +255,12 @@ echo '<html>
 </head>
 <body>';
 
+echo '
+<div style="position:absolute;top:0px;left:800px;width:200px;height:100%;border:1px solid red;">
+	<div id="edits"></div>
+</div>';
 
-echo '	   <div class="navbar navbar-fixed-top">
-			  <div class="navbar-inner">
-				<div class="container">
-				  <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				  </a>
-				  <a class="brand" href=".">OCR</a>
-				  <!--
-				  <div class="nav-collapse">
-					<ul class="nav">
-					  <li class="active"><a href=".">Home</a></li>
-					  <li><a href="?page=about">About</a></li>
-					</ul>
-				  </div> -->
-				  <!--/.nav-collapse -->
-				  
-				</div>
-			  </div>
-			</div>
-		
-		
-			<div style="margin-top:40px;" class="container-fluid">
-				<div class="row-fluid">
-					<div class="span8">';
-					
-						echo export_html_fragement_dom($obj, $image_filename);
-					echo '</div>
-					<div class="span4" id="edits" style="padding-right:40px;height:400px;overflow:auto;">
-					
-					</div>
-				</div>';
-				
-
-
-
-
-echo '</div>';
+echo export_html_fragement_dom($obj, $image_filename);
 
 echo '<!--Adjust font sizes so that text fits within bounding boxes-->
     <script>$(".ocr_line").each(function(i, obj) {

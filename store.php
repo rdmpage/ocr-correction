@@ -12,8 +12,8 @@ require_once (dirname(__FILE__) . '/djvu/djvu_structure.php');
 $PageID = 34570741;
 //$PageID = 34565801;
 
-$PageID = 16002437;
-$PageID = 16002438;
+//$PageID = 16002437;
+//$PageID = 16002438;
 
 $xml_filename = 'examples/' . $PageID . '.xml';
 
