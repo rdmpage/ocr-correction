@@ -23,6 +23,10 @@ curl -X PUT http://127.0.0.1:5984/_config/cors/headers -d '"accept, authorizatio
 
 Then restart CouchDB.
 
+### Cloudant
+
+See [CORS quickstart](https://gist.github.com/chewbranca/0f690f8c2bfad37a712a)
+
 ### Create database and view
 
 Create a CouchDB database called "ocr", then create the view page/edits:

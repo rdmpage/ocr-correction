@@ -93,8 +93,10 @@ function export_html_fragement_dom($page, $image_url='')
 $PageID = 34570741;
 //$PageID = 34565801;
 
+
 // LXV.—On a new Banded Mungoose from Somaliland
 $PageID = 16002437;
+$PageID = 16002438;
 
 $xml_filename 	= 'examples/' . $PageID . '.xml';
 $image_filename = 'examples/' . $PageID . '.png';
@@ -160,13 +162,21 @@ echo '<html>
 	
 		var remote = false;
 		
+		var couchdb;
+		
+		// local
+		couchdb = "http://127.0.0.1:5984/ocr";
+		
+		// Cloudant
+		couchdb = "http://<username>:<password>@rdmpage.cloudant.com:5984/ocr";
+		
 	   	if (remote) {
 	   		// Write direct to CouchDB
-			var db = new PouchDB("http://127.0.0.1:5984/ocr");
+			var db = new PouchDB(couchdb);
 		} else {
 			// Write to PouchDB, then replicate
 			var db = new PouchDB("ocr");
-			var remoteCouch = "http://127.0.0.1:5984/ocr";
+			var remoteCouch = couchdb;
 		}
 	
 		var before_text = "";
