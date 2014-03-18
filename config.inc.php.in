@@ -35,8 +35,8 @@ $config['couchdb_options'] = array(
 if (0)
 {
 	$config['couchdb_options'] = array(
-			'database' => 'bionames',
-			'host' => 'rdmpage:peacrab@rdmpage.cloudant.com',
+			'database' => 'ocr',
+			'host' => ‘<username>:<password>@rdmpage.cloudant.com',
 			'port' => 5984
 			);
 }
