@@ -30,7 +30,7 @@ var OCRCorrection = (function($) {
       this.bindActions();
       this.getEdits();
       if (this.settings.show_replacements) { this.getTextReplacements(); }
-	  if (this.settings.show_word_replacements) { this.getWordReplacements(); }
+	    if (this.settings.show_word_replacements) { this.getWordReplacements(); }
     },
 
     setVariables: function() {
@@ -178,9 +178,7 @@ WIP: offline retrieval from PouchDB
                   "<span style=\"background-color:orange\">" + this.value + "</span>");
               }
             });
-            
             line.html(newText);
-            
           }
         }
       });
