@@ -1,5 +1,5 @@
 <?php
-require_once 'DjVu.class.php';
+require_once 'djvu.class.php';
 
 class DjVuView extends DjVu {
 
