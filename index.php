@@ -2,7 +2,7 @@
 require_once(dirname(__FILE__) . '/lib/djvu.view.class.php');
 
 
-$PageID = 34570741;
+$PageID = 16002438;
 $PageWidth = 800;
 
 $xml_filename = 'examples/' . $PageID . '.xml';

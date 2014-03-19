@@ -227,10 +227,10 @@ class DjVu {
     foreach($words as $word)
     {
       // coordinates
-      if ($word->hasAttributes()) 
+      if ($word->hasAttributes())
       { 
         $attributes2 = array();
-        $attrs = $word->attributes; 
+        $attrs = $word->attributes;
 
         foreach ($attrs as $i => $attr)
         {

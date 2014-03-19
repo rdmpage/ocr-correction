@@ -93,7 +93,7 @@ var OCRCorrection = (function($) {
           history = this.vars.edit_history;
 
       if (after_text !== this.vars.before_text){
-        history.append('<div class="ocr_edit_item">' + after_text + '</div>');
+        history.append(this.formatHistoryItem(after_text));
         this.vars.pouch.post({
           type: "edit",
           time: timestamp,
@@ -110,7 +110,11 @@ var OCRCorrection = (function($) {
     getTime: function() {
       return parseInt(String(new Date().getTime()).substring(0,10), 10);
     },
-    
+
+    formatHistoryItem: function(after_text) {
+      return '<div class="ocr_edit_item">' + after_text + '</div>';
+    },
+
     synchronize: function() {
       if(this.settings.couch_db.indexOf("http://") !== -1) {
         //WIP: do we really want to synchronize the entire db?
@@ -119,6 +123,7 @@ var OCRCorrection = (function($) {
     },
 
     getEdits: function() {
+      var self = this;
 /*
 WIP: offline retrieval from PouchDB
       var fun = { map : function map(doc) { emit([doc.pageId, doc.time], doc); }, reduce:false },
@@ -138,6 +143,7 @@ WIP: offline retrieval from PouchDB
           success: function(response) {
             $.each(response.rows, function() {
               $("#" + this.value.lineId).html(this.value.text).addClass("ocr_edited");
+              self.vars.edit_history.append(self.formatHistoryItem(this.value.text));
             });
           }
         });
