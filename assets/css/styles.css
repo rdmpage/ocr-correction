@@ -23,6 +23,10 @@ body {
   width: 100%;
 }
 
+.ocr_edited {
+  background-color: #FFFF66;
+}
+
 #ocr_image_container{
   display:none;
   box-shadow: 4px 4px 4px rgba(64,64,64,0.5);
@@ -48,4 +52,12 @@ body {
   padding-right:40px;
   height:400px;
   overflow:auto;
+}
+
+.ocr_edit_item {
+  background-color: white;
+  padding: 4px;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: rgb(192, 192, 192);
 }

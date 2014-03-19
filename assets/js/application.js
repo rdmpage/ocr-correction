@@ -6,15 +6,16 @@ var OCRCorrection = (function($) {
   var _private = {
 
     settings: {
-      edit_url : './edit.php?pageId=',
+      edits_url : './edit.php?pageId=',
       page_id : 0,
       page_width : 800,
-      db: ""
+      couch_db: "",
+      pouch_db: "ocr"
     },
 
     vars: {
-      img_container : {},
-      img : {},
+      ocr_img_container : {},
+      ocr_img : {},
       edit_history: {},
       before_text : "",
       pouch: {}
@@ -29,9 +30,11 @@ var OCRCorrection = (function($) {
 
     setVariables: function() {
       this.vars.edit_history = $("#ocr_edit_history");
-      this.vars.img_container = $('#ocr_image_container');
-      this.vars.img = $("#ocr_image");
-      this.vars.pouch = new PouchDB(this.settings.db);
+      this.vars.ocr_img_container = $('#ocr_image_container');
+      this.vars.ocr_img = $("#ocr_image");
+      this.vars.pouch = new PouchDB(this.settings.couch_db);
+      //WIP
+      //this.vars.pouch = new PouchDB(this.settings.pouch_db);
     },
 
     setFontSize: function() {
@@ -71,25 +74,26 @@ var OCRCorrection = (function($) {
           top =  $(ele).offset().top + $(ele).outerHeight(true) - 35,
           left = $(ele).offset().left - 25;
 
-      this.vars.img.css({"clip" : clip}).show();
-      this.vars.img_container.css({"top" : top + "px", "left" : left + "px", "height" : (parts[4] - parts[2]) + 10 + "px", "width" : $(ele).width() + 10 + "px"}).show();
+      this.vars.ocr_img.css({"clip" : clip}).show();
+      this.vars.ocr_img_container.css({
+        "top" : top + "px",
+        "left" : left + "px",
+        "height" : (parts[4] - parts[2]) + 10 + "px",
+        "width" : $(ele).width() + 10 + "px"}).show();
     },
 
     closePopUp: function() {
-      this.vars.img_container.hide();
-      this.vars.img.hide();
+      this.vars.ocr_img_container.hide();
+      this.vars.ocr_img.hide();
     },
 
     postEdit: function(ele) {
       var after_text = $(ele).html(),
-          timestamp = parseInt(String(new Date().getTime()).substring(0,10), 10), //10 digit timestamp for PHP
-          history = this.vars.edit_history.find("div"),
-          html = history.html();
+          timestamp = this.getTime(), //10 digit timestamp for PHP
+          history = this.vars.edit_history;
 
       if (after_text !== this.vars.before_text){
-        html += after_text + "<hr />";
-        history.html(html);
-
+        history.append('<div class="ocr_edit_item">' + after_text + '</div>');
         this.vars.pouch.post({
           type: "edit",
           time: timestamp,
@@ -99,27 +103,45 @@ var OCRCorrection = (function($) {
           text: after_text
         });
         
-        this.replicate();
+        this.synchronize();
       }
     },
+
+    getTime: function() {
+      return parseInt(String(new Date().getTime()).substring(0,10), 10);
+    },
     
-    replicate: function() {
-      if(this.settings.db.indexOf("http://") !== -1) {
-        this.vars.pouch.replicate.to(this.settings.db);
+    synchronize: function() {
+      if(this.settings.couch_db.indexOf("http://") !== -1) {
+        //WIP: do we really want to synchronize the entire db?
+        this.vars.pouch.replicate.sync(this.settings.couch_db, { continuous : true });
       }
     },
 
     getEdits: function() {
-      $.ajax({
-        type: "GET",
-        url: this.settings.edit_url + this.settings.page_id,
-        dataType: 'json',
-        success: function(response) {
-          $.each(response.rows, function() {
-            $("#" + this.value.lineId).html(this.value.text);
-          });
-        }
+/*
+WIP: offline retrieval from PouchDB
+      var fun = { map : function map(doc) { emit([doc.pageId, doc.time], doc); }, reduce:false },
+          options = { startkey : [this.settings.page_id], endkey : [this.settings.page_id, this.getTime()] };
+
+      this.vars.pouch.query(fun, options, function(err, response) {
+        $.each(response.rows, function() {
+          $("#" + this.value.lineId).html(this.value.text).addClass("ocr_edited");
+        });
       });
+*/
+      if(this.settings.couch_db) {
+        $.ajax({
+          type: "GET",
+          url: this.settings.edits_url + this.settings.page_id,
+          dataType: 'json',
+          success: function(response) {
+            $.each(response.rows, function() {
+              $("#" + this.value.lineId).html(this.value.text).addClass("ocr_edited");
+            });
+          }
+        });
+      }
     }
 
   };

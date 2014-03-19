@@ -31,7 +31,12 @@ $html = $djvu->createHTML();
 <script src="assets/js/pouchdb-2.0.0.min.js"></script>
 <script src="assets/js/application.js"></script>
 <script>$(function() {
-  OCRCorrection.init({ db : "http://127.0.0.1:5984/ocr", page_id : <?php echo $PageID; ?>, page_width : <?php echo $PageWidth ?> }); });
+  OCRCorrection.init({
+    pouch_db : "ocr",
+    couch_db : "http://127.0.0.1:5984/ocr",
+    page_id : <?php echo $PageID; ?>,
+    page_width : <?php echo $PageWidth ?> });
+  });
 </script>
 </head>
 <body>
@@ -65,10 +70,8 @@ $html = $djvu->createHTML();
         <img id="ocr_image" src="<?php echo $image_filename; ?>" />
       </div>
     </div>
-    <div class="span3">
-      <div id="ocr_edit_history" class="media">
-        <div></div>
-      </div>
+    <div class="span4">
+      <div id="ocr_edit_history" class="media"></div>
     </div>
   </div>
 </div>
