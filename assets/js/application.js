@@ -103,6 +103,8 @@ var OCRCorrection = (function($) {
           text: after_text
         });
         
+        $(ele).addClass("ocr_edited");
+
         this.synchronize();
       }
     },
@@ -151,7 +153,7 @@ WIP: offline retrieval from PouchDB
     }
 
   };
-  
+
   return {
     init: function(args) {
       $.extend(_private.settings, args);

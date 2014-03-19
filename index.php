@@ -4,6 +4,7 @@ require_once(dirname(__FILE__) . '/lib/djvu.view.class.php');
 
 $PageID = 16002438;
 $PageWidth = 800;
+$CouchDB = "http://127.0.0.1:5984/ocr";
 
 $xml_filename = 'examples/' . $PageID . '.xml';
 $image_filename = 'examples/' . $PageID . '.png';
@@ -33,7 +34,7 @@ $html = $djvu->createHTML();
 <script>$(function() {
   OCRCorrection.init({
     pouch_db : "ocr",
-    couch_db : "http://127.0.0.1:5984/ocr",
+    couch_db : "<?php echo $CouchDB; ?>",
     page_id : <?php echo $PageID; ?>,
     page_width : <?php echo $PageWidth ?> });
   });
