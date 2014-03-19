@@ -12,7 +12,8 @@ var OCRCorrection = (function($) {
       page_width : 800,
       couch_db: "",
       pouch_db: "ocr",
-      show_replacements: false
+      show_replacements: false,
+      show_word_replacements: false
     },
 
     vars: {
@@ -29,6 +30,7 @@ var OCRCorrection = (function($) {
       this.bindActions();
       this.getEdits();
       if (this.settings.show_replacements) { this.getTextReplacements(); }
+	  if (this.settings.show_word_replacements) { this.getWordReplacements(); }
     },
 
     setVariables: function() {
@@ -183,7 +185,56 @@ WIP: offline retrieval from PouchDB
         }
       });
     }
-  }
+  },
+  
+  
+	getWordReplacements: function() 
+	{
+		function getWordAt(str, pos) {
+			var left = str.substr(0, pos);
+			var right = str.substr(pos);
+			left = left.replace(/^.+ /g, "");
+			right = right.replace(/ .+$/g, "");
+			return left + right;
+		}
+	
+      if(this.settings.couch_db) {
+	  
+		$.ajax({
+          type: "GET",
+          url: this.settings.diffs_url,
+          dataType: 'json',
+          success: function(response) {	
+			for (var lineNum=0; lineNum >=0; lineNum++) {			
+				var line = $("#line" + lineNum);										
+				
+				if (typeof line != "object")
+				{ 
+					break; 
+				}
+					
+				var newText = line.html();				
+				
+				$.each(response.rows, function() {			
+					var pos = newText.indexOf(this.key);			
+					while (pos != -1) {					
+						var word = getWordAt(newText, pos);
+						newText = newText.replace(word, 
+							"<span title=\"Replace " + this.key + " with " + this.value + "\" style=\"background-color:lavender\">" + word + "</span>");
+							
+						line.html(newText);
+						
+						//move to last replacement
+						pos = newText.lastIndexOf("</span>") + 7;
+						
+						pos = newText.indexOf(this.key, pos)
+					}
+				});
+			}
+		  }
+		});
+	  }
+	}
 
   };
 
