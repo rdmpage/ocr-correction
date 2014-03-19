@@ -5,15 +5,16 @@
  * @author Alexander Thiemann
  */
 
-const COUCH_GET = 'GET';
-const COUCH_DELETE = 'DELETE';
-const COUCH_POST = 'POST';
-const COUCH_PUT = 'PUT';
 
 class CouchRequest
 {
+	const COUCH_GET = 'GET';
+	const COUCH_DELETE = 'DELETE';
+	const COUCH_POST = 'POST';
+	const COUCH_PUT = 'PUT';
+
     private $url = "";
-    private $method = COUCH_GET;
+    private $method = CouchRequest::COUCH_GET;
     private $data = null;
     private $headers = array();
 
@@ -28,10 +29,10 @@ class CouchRequest
      * @param string $username
      * @param string $password
      */
-    public function __construct($url, $method = COUCH_GET, $data = null, $username = null, $password = null)
+    public function __construct($url, $method = CouchRequest::COUCH_GET, $data = null, $username = null, $password = null)
     {
         $this->url = $url;
-        $allowed = array(COUCH_GET, COUCH_DELETE, COUCH_POST, COUCH_PUT);
+        $allowed = array(CouchRequest::COUCH_GET, CouchRequest::COUCH_DELETE, CouchRequest::COUCH_POST, CouchRequest::COUCH_PUT);
 
         if (!in_array($method, $allowed)) {
             throw new Exception('Error, invalid HTTP-METHOD: '.$method);
