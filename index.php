@@ -30,7 +30,7 @@ $html = $djvu->createHTML();
   <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
 <script src="assets/js/jquery-1.11.0.min.js"></script>
-<script src="assets/js/pouchdb-1.1.0.min.js"></script>
+<script src="assets/js/pouchdb-2.0.0.min.js"></script>
 <script src="assets/js/application.js"></script>
 <script>$(function() {
   OCRCorrection.init({ db : "http://127.0.0.1:5984/ocr", page_id : <?php echo $PageID; ?>, page_width : <?php echo $PageWidth ?> }); });

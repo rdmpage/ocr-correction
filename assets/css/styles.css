@@ -6,11 +6,7 @@ body {
 
 .ocr_page {
   background-color: white;
-  /* box-shadow:2px 2px 10px #aaaaaa; */
-  /* border:1px solid black; */
   position:relative;
-  /* left: 20px;
-  top: 20px; */
   width: 800px;
   height: 1316.9313957418px;
 }
@@ -45,4 +41,9 @@ body {
   padding-right:40px;
   height:400px;
   overflow:auto;
+  position:absolute;
+  top:0px;
+  left:800px;
+  width:200px;
+  height:100%;
 }
