@@ -51,7 +51,13 @@ var OCRCorrection = (function($) {
                       self.vars.before_text = $(this).html();
                       self.showPopUp(this); })
                     .on('blur', function() {
-                      self.postEdit(this);
+                      self.postEdit(this); })
+                    .on('keypress', function(e) {
+                      var code = e.keyCode || e.which;
+                      if(code === 13) {
+                        e.preventDefault();
+                        $(this).next().focus();
+                      }
                     });
     },
 
@@ -102,7 +108,7 @@ var OCRCorrection = (function($) {
         dataType: 'json',
         success: function(response) {
           $.each(response.rows, function() {
-            $("#" + this.key[2]).html(this.value);
+            $("#" + this.value.lineId).html(this.value.text);
           });
         }
       });
