@@ -1,5 +1,5 @@
 <?php
-require_once(dirname(__FILE__) . '/lib/DjVu.view.class.php');
+require_once(dirname(__FILE__) . '/lib/djvu.view.class.php');
 
 
 $PageID = 34570741;
