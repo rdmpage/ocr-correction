@@ -26,11 +26,11 @@ class CouchSimple
         $this->password = $password;
 
         if ($autoCreate) {
-            $this->talkToDB("", COUCH_PUT);
+            $this->talkToDB("", CouchRequest::COUCH_PUT);
         }
     }
 
-    private function talkToDB($url, $method = COUCH_GET, $data = null)
+    private function talkToDB($url, $method = CouchRequest::COUCH_GET, $data = null)
     {
         $fullURL = "http://".$this->host.":".$this->port."/".$this->db.$url;
 
@@ -52,22 +52,22 @@ class CouchSimple
 
     public function storeDocWithId($doc)
     {
-        return $this->talkToDB("/".$doc->_id, COUCH_PUT, json_encode($doc));
+        return $this->talkToDB("/".$doc->_id, CouchRequest::COUCH_PUT, json_encode($doc));
     }
 
     public function storeDoc($doc)
     {
-        return $this->talkToDB("", COUCH_POST, json_encode($doc));
+        return $this->talkToDB("", CouchRequest::COUCH_POST, json_encode($doc));
     }
 
     public function deleteDoc($docId, $rev)
     {
-        return $this->talkToDB("/".$docId."?rev=".$rev, COUCH_DELETE);
+        return $this->talkToDB("/".$docId."?rev=".$rev, CouchRequest::COUCH_DELETE);
     }
 
     public function getView($designDoc, $viewName)
     {
-        return $this->talkToDB("/_design/".$designDoc."/_view/".$viewName, COUCH_GET);
+        return $this->talkToDB("/_design/".$designDoc."/_view/".$viewName, CouchRequest::COUCH_GET);
     }
 
     public function getAll()
