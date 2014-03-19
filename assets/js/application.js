@@ -7,10 +7,12 @@ var OCRCorrection = (function($) {
 
     settings: {
       edits_url : './edit.php?pageId=',
+      diffs_url : './textreplacement.php',
       page_id : 0,
       page_width : 800,
       couch_db: "",
-      pouch_db: "ocr"
+      pouch_db: "ocr",
+      show_replacements: false
     },
 
     vars: {
@@ -26,6 +28,7 @@ var OCRCorrection = (function($) {
       this.setFontSize();
       this.bindActions();
       this.getEdits();
+      if (this.settings.show_replacements) { this.getTextReplacements(); }
     },
 
     setVariables: function() {
@@ -150,7 +153,37 @@ WIP: offline retrieval from PouchDB
           }
         });
       }
+    },
+  
+  getTextReplacements: function() {
+    var lines = $('.ocr_line').length;
+
+    if(this.settings.couch_db) {
+      $.ajax({
+        type: "GET",
+        url: this.settings.diffs_url,
+        dataType: 'json',
+        success: function(response) {
+          for (var lineNum = 0; lineNum < lines; lineNum++) {
+            var line = $("#line" + lineNum);
+            var newText = line.html();
+
+            if (line.length === 0) { break; }
+            
+            $.each(response.rows, function() {
+              if (newText.indexOf(this.key) !== -1) {
+                newText = newText.replace(this.key,
+                  "<span style=\"background-color:orange\">" + this.value + "</span>");
+              }
+            });
+            
+            line.html(newText);
+            
+          }
+        }
+      });
     }
+  }
 
   };
 
