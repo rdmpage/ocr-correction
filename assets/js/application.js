@@ -77,6 +77,7 @@ var OCRCorrection = (function($) {
 
     closePopUp: function() {
       this.vars.img_container.hide();
+      this.vars.img.hide();
     },
 
     postEdit: function(ele) {
