@@ -53,7 +53,7 @@ var OCRCorrection = (function($) {
                       self.vars.before_text = $(this).html();
                       self.showPopUp(this); })
                     .on('blur', function() {
-                      //self.closePopUp();
+                      self.closePopUp();
                       self.postEdit(this); })
                     .on('keypress', function(e) {
                       var code = e.keyCode || e.which;
