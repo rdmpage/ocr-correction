@@ -33,7 +33,7 @@ Create a CouchDB database called "ocr", then create the view page/edits:
 
 ```javascript
 function(doc) {
-  emit([doc.pageId, doc.time, doc.lineId], doc.text);
+  emit([doc.pageId, doc.time], doc);
 }
 ```
 
