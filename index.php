@@ -20,10 +20,10 @@ $html = $djvu->createHTML();
 <head>
 <meta charset="utf-8">
 <meta name="ocr-capabilities" content="ocr_carea ocr_line ocr_page ocr_par">
-<link type="text/css" href="public/stylesheets/styles.css" rel="stylesheet" media="screen" />
-<script src="public/javascript/jquery-1.11.0.min.js"></script>
-<script src="public/javascript/pouchdb-1.1.0.min.js"></script>
-<script src="public/javascript/application.js"></script>
+<link type="text/css" href="assets/css/styles.css" rel="stylesheet" media="screen" />
+<script src="assets/js/jquery-1.11.0.min.js"></script>
+<script src="assets/js/pouchdb-1.1.0.min.js"></script>
+<script src="assets/js/application.js"></script>
 <script>$(function() {
   OCRCorrection.init({ db : "http://127.0.0.1:5984/ocr", page_id : <?php echo $PageID; ?>, page_width : <?php echo $PageWidth ?> }); });
 </script>
