@@ -14,6 +14,7 @@ var OCRCorrection = (function($) {
 
     vars: {
       img_container : {},
+      img : {},
       edit_history: {},
       before_text : "",
       pouch: {}
@@ -29,6 +30,7 @@ var OCRCorrection = (function($) {
     setVariables: function() {
       this.vars.edit_history = $("#ocr_edit_history");
       this.vars.img_container = $('#ocr_image_container');
+      this.vars.img = $("#ocr_image");
       this.vars.pouch = new PouchDB(this.settings.db);
     },
 
@@ -51,6 +53,7 @@ var OCRCorrection = (function($) {
                       self.vars.before_text = $(this).html();
                       self.showPopUp(this); })
                     .on('blur', function() {
+                      self.closePopUp();
                       self.postEdit(this); })
                     .on('keypress', function(e) {
                       var code = e.keyCode || e.which;
@@ -64,12 +67,15 @@ var OCRCorrection = (function($) {
     showPopUp: function(ele) {
       var bbox = $(ele).data("bbox"),
           parts = bbox.split(" "),
-          clip = "rect(" + parts[2] + "px," + parts[3] + "px," + parts[4] + "px," + parts[1] + "px)",
-          zoom = this.settings.page_width/(parts[3] - parts[1]),
-          bottom =  $(ele).offset().top + $(ele).outerHeight(true);
+          clip = "rect(" + parts[2] + "px, " + parts[3] + "px, " + parts[4] + "px, " + parts[1] + "px)",
+          bottom =  $(ele).offset().top + $(ele).outerHeight(true) - 35;
 
-      this.vars.img_container.find("img").css({"clip" : clip, "top": -parts[2] + "px", "left" : -parts[1] + "px", "zoom" : zoom});
-      this.vars.img_container.css({"top" : bottom + "px", "height" :  zoom * (parts[4] - parts[2]) + 2 + "px"}).show();
+      this.vars.img.css({"clip" : clip}).show();
+      this.vars.img_container.css({"top" : bottom + "px", "height" :  (parts[4] - parts[2]) + 10 + "px"}).show();
+    },
+
+    closePopUp: function() {
+      this.vars.img_container.hide();
     },
 
     postEdit: function(ele) {

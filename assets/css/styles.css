@@ -4,11 +4,12 @@ body {
    background-color: #E9E9E9;
 }
 
-.ocr_page {
-  background-color: white;
+#ocr_content {
   position:relative;
   width: 800px;
+  background-color: white;
   height: 1316.9313957418px;
+  font-family:serif;
 }
 
 /* http://blog.vjeux.com/2011/css/css-one-line-justify.html */
@@ -23,27 +24,28 @@ body {
 }
 
 #ocr_image_container{
-  position:absolute;
   display:none;
-  border:1px solid black;
-  width:800px;
-  z-index:100;
-  background-color:white;
+  box-shadow: 4px 4px 4px rgba(64,64,64,0.5);
+  position:absolute;
+  top:0px;
+  left:0px;
+  border:1px solid rgb(192,192,192);
+  width:100%;
+  background:white;
+  height:0px;
 }
 
-#ocr_image_container img{
+#ocr_image{
   position:absolute;
   z-index:100;
   background-color:white;
+  left:0px;
+  top:25px;
+  display:none;
 }
 
 #ocr_edit_history {
   padding-right:40px;
   height:400px;
   overflow:auto;
-  position:absolute;
-  top:0px;
-  left:800px;
-  width:200px;
-  height:100%;
 }
