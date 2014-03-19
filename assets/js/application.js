@@ -53,7 +53,7 @@ var OCRCorrection = (function($) {
                       self.vars.before_text = $(this).html();
                       self.showPopUp(this); })
                     .on('blur', function() {
-                      self.closePopUp();
+                      //self.closePopUp();
                       self.postEdit(this); })
                     .on('keypress', function(e) {
                       var code = e.keyCode || e.which;
@@ -68,10 +68,11 @@ var OCRCorrection = (function($) {
       var bbox = $(ele).data("bbox"),
           parts = bbox.split(" "),
           clip = "rect(" + parts[2] + "px, " + parts[3] + "px, " + parts[4] + "px, " + parts[1] + "px)",
-          bottom =  $(ele).offset().top + $(ele).outerHeight(true) - 35;
+          top =  $(ele).offset().top + $(ele).outerHeight(true) - 35,
+          left = $(ele).offset().left - 25;
 
       this.vars.img.css({"clip" : clip}).show();
-      this.vars.img_container.css({"top" : bottom + "px", "height" :  (parts[4] - parts[2]) + 10 + "px"}).show();
+      this.vars.img_container.css({"top" : top + "px", "left" : left + "px", "height" : (parts[4] - parts[2]) + 10 + "px", "width" : $(ele).width() + 10 + "px"}).show();
     },
 
     closePopUp: function() {
