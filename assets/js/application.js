@@ -166,17 +166,19 @@ WIP: offline retrieval from PouchDB
         success: function(response) {
           for (var lineNum = 0; lineNum < lines; lineNum++) {
             var line = $("#line" + lineNum);
+            var newText = line.html();
 
             if (line.length === 0) { break; }
-
+            
             $.each(response.rows, function() {
-              var newText = line.html();
               if (newText.indexOf(this.key) !== -1) {
                 newText = newText.replace(this.key,
                   "<span style=\"background-color:orange\">" + this.value + "</span>");
-                line.html(newText);
               }
             });
+            
+            line.html(newText);
+            
           }
         }
       });
