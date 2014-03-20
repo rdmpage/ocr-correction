@@ -178,7 +178,7 @@ WIP: offline retrieval from PouchDB
     },
   
     getTextReplacements: function() {
-      var lines = $('.ocr_line').length;
+      var lines = $('.ocr_line');
 
       if(this.settings.couch_db) {
         $.ajax({
@@ -186,20 +186,17 @@ WIP: offline retrieval from PouchDB
           url: this.settings.diffs_url,
           dataType: 'json',
           success: function(response) {
-            for (var lineNum = 0; lineNum < lines; lineNum++) {
-              var line = $("#line" + lineNum);
-              var newText = line.html();
-
-              if (line.length === 0) { break; }
-            
+            $.each(lines, function(i) {
+              var line = $("#line" + i),
+                  newText = line.html();
               $.each(response.rows, function() {
-                if (newText.indexOf(this.key) !== -1) {
+                if (line.html().indexOf(this.key) !== -1) {
                   newText = newText.replace(this.key,
                     "<span style=\"background-color:orange\">" + this.value + "</span>");
                 }
               });
               line.html(newText);
-            }
+            });
           }
         });
       }
