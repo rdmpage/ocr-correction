@@ -40,7 +40,6 @@ $(function() {
     pouch_db : "ocr",
     couch_db : "<?php echo $CouchDB; ?>",
     page_id : <?php echo $PageID; ?>,
-    page_width : <?php echo $PageWidth ?>,
     show_replacements : true,
     show_word_replacements : true
   });
