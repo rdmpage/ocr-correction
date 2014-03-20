@@ -65,7 +65,7 @@ var OCRCorrection = (function($) {
 
       $('.ocr_page').find('.ocr_line')
                     .on('focus', function() {
-                      self.vars.before_text = $(this).html();
+                      self.vars.before_text = $(this).text();
                       self.showPopUp(this); })
                     .on('blur', function() {
                       self.closePopUp();
