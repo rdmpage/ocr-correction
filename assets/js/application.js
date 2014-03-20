@@ -206,9 +206,29 @@ WIP: offline retrieval from PouchDB
 		function getWordAt(str, pos) {
 			var left = str.substr(0, pos);
 			var right = str.substr(pos);
-			left = left.replace(/^.+ /g, "");
-			right = right.replace(/ .+$/g, "");
-			return left + right;
+			var letters = /^[0-9a-zA-Z]+$/;  
+
+			//find left end
+			var leftPos = 0;
+			if (left.length > 0) {
+				leftPos = left.length - 1;
+				while (left.substr(leftPos,1).match(letters) && leftPos > 0) {
+					leftPos--;
+				}
+				if (!left.substr(leftPos,1).match(letters)) leftPos++;
+			}
+			
+			//find right end
+			var rightPos = 0;
+			if (right.length > 0) {
+				rightPos = 0;
+				while (right.substr(rightPos,1).match(letters) && rightPos < right.length - 1) {
+					rightPos++;
+				}
+				if (right.substr(rightPos,1).match(letters)) rightPos++;
+			}
+			
+			return left.substr(leftPos) + right.substr(0, rightPos);
 		}
 		
 		function findNextNonHtmlText(str, text, pos) {
@@ -245,13 +265,13 @@ WIP: offline retrieval from PouchDB
                   newText = line.html();
 
               $.each(response.rows, function() {
-					if (this.key.length > 0) { //not sure we care about single char changes
+					if (this.key.length > 1) { //not sure we care about single char changes
 					
 						var pos = findNextNonHtmlText(newText, this.key, 0),
-							word = "";			
+							word = "";		
 						while (pos != -1) {	
 							word = getWordAt(newText, pos);
-							
+
 							//work out word start pos :-/
 							var startPos = pos - word.indexOf(this.key);
 							
@@ -262,7 +282,7 @@ WIP: offline retrieval from PouchDB
 							//move to last replacement
 							pos = newText.lastIndexOf("</span>") + 7;
 							
-							pos = findNextNonHtmlText(newText, this.key, pos);
+							pos = findNextNonHtmlText(newText, this.key, pos);							
 						}
 					}
                 });
