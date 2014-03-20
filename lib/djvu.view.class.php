@@ -132,10 +132,6 @@ class DjVuView extends DjVu {
 
     $ocr_page = $doc->appendChild($doc->createElement('div'));
     $ocr_page->setAttribute('class', 'ocr_page');
-    $ocr_page->setAttribute('title', 
-      'bbox 0 0 ' . ($scale * $this->page_structure->bbox[2]) . ' ' . ($scale * $this->page_structure->bbox[1])
-      . '; image ' . $this->image_url
-      );
 
     foreach ($this->page_structure->lines as $line){
       $ocr_line = $ocr_page->appendChild($doc->createElement('div'));
