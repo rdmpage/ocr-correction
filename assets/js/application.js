@@ -203,6 +203,7 @@ WIP: offline retrieval from PouchDB
     },
 
     getWordReplacements: function() {
+
       function getWordAt(str, pos) {
         var left = str.substr(0, pos);
         var right = str.substr(pos);
@@ -210,42 +211,38 @@ WIP: offline retrieval from PouchDB
         right = right.replace(/ .+$/g, "");
         return left + right;
       }
-  
-        if(this.settings.couch_db) {
-    
-      $.ajax({
-            type: "GET",
-            url: this.settings.diffs_url,
-            dataType: 'json',
-            success: function(response) { 
-        for (var lineNum=0; lineNum >=0; lineNum++) {     
-          var line = $("#line" + lineNum);                    
-        
-          if (typeof line != "object")
-          { 
-            break; 
+
+      if(this.settings.couch_db) {
+        var lines = $('.ocr_line');
+
+        $.ajax({
+          type: "GET",
+          url: this.settings.diffs_url,
+          dataType: 'json',
+          success: function(response) {
+            $.each(lines, function(i) {
+              var line = $("#line" + i),
+                  newText = line.html();
+
+              $.each(response.rows, function() {
+                var pos = newText.indexOf(this.key),
+                    word = "";
+                while (pos !== -1) {
+                  word = getWordAt(newText, pos);
+                  newText = newText.replace(word, 
+                    "<span title=\"Replace " + this.key + " with " + this.value + "\" style=\"background-color:lavender\">" + word + "</span>");
+
+                  line.html(newText);
+
+                  //move to last replacement
+                  pos = newText.lastIndexOf("</span>") + 7;
+                  pos = newText.indexOf(this.key, pos)
+                }
+              });
+
+            });
           }
-          
-          var newText = line.html();        
-        
-          $.each(response.rows, function() {      
-            var pos = newText.indexOf(this.key);      
-            while (pos != -1) {         
-              var word = getWordAt(newText, pos);
-              newText = newText.replace(word, 
-                "<span title=\"Replace " + this.key + " with " + this.value + "\" style=\"background-color:lavender\">" + word + "</span>");
-              
-              line.html(newText);
-            
-              //move to last replacement
-              pos = newText.lastIndexOf("</span>") + 7;
-            
-              pos = newText.indexOf(this.key, pos)
-            }
-          });
-        }
-        }
-      });
+        });
       }
     },
   

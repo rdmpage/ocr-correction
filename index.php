@@ -42,7 +42,7 @@ $(function() {
     page_id : <?php echo $PageID; ?>,
     page_width : <?php echo $PageWidth ?>,
     show_replacements : true,
-    show_word_replacements : false
+    show_word_replacements : true
   });
   OAuth.initialize('<?php echo OAUTH_KEY; ?>');
 });
