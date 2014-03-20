@@ -142,3 +142,15 @@ http://biostor.org/bhl_page_bw_image.php?PageID=34570741
 ## User Authentication
 
 This application uses [OAuth.io](https://oauth.io/). Create an account there, configure your OAuth service provider(s) of choice and adjust the OAUTH_KEY in /config/config.inc.php
+
+## Command Line Scripts
+
+The /bin directory includes two PHP scripts to be executed from the command line. "deja_couch.php" loads all lines of DjVu files in a directory into CouchDB to seed the database. "couch_text.php" extracts all the edits made and reproduces a text file.
+
+```bash
+  $ php ./bin/deja_couch.php /nested/directory/of/djvu.xml
+```
+
+```bash
+  $ php ./bin/couch_text.php 34570741 /output/directory
+```
