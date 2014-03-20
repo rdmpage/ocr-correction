@@ -125,3 +125,7 @@ You can fetch page images and XML from BioStor.
 
 http://biostor.org/bhl_page_xml.php?PageID=34570741
 http://biostor.org/bhl_page_bw_image.php?PageID=34570741
+
+## User Authentication
+
+This application uses [OAuth.io](https://oauth.io/). Create an account there, configure your OAuth service provider(s) of choice and adjust the OAUTH_KEY in /config/config.inc.php

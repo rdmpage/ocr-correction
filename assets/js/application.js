@@ -1,4 +1,4 @@
-/*global jQuery, window, document, self, alert, PouchDB */
+/*global jQuery, window, document, self, alert, PouchDB, Backbone, _ */
 var OCRCorrection = (function($) {
 
   "use strict";
@@ -21,25 +21,33 @@ var OCRCorrection = (function($) {
       ocr_img : {},
       edit_history: {},
       before_text : "",
-      pouch: {}
+      pouch: {},
+      user: {
+        userAvatar : "",
+        userName : "",
+        userUrl : ""
+      }
     },
 
-    init: function() {
+    initialize: function() {
+      $.cookie.json = true;
       this.setVariables();
       this.setFontSize();
       this.bindActions();
+      this.loadUser();
       this.getEdits();
       if (this.settings.show_replacements) { this.getTextReplacements(); }
-	    if (this.settings.show_word_replacements) { this.getWordReplacements(); }
+      if (this.settings.show_word_replacements) { this.getWordReplacements(); }
+      this.bindAuthentication();
     },
 
     setVariables: function() {
       this.vars.edit_history = $("#ocr_edit_history");
+      this.vars.edit_history_template = $('#ocr_history_item');
       this.vars.ocr_img_container = $('#ocr_image_container');
       this.vars.ocr_img = $("#ocr_image");
       this.vars.pouch = new PouchDB(this.settings.couch_db);
-      //WIP
-      //this.vars.pouch = new PouchDB(this.settings.pouch_db);
+      //WIP this.vars.pouch = new PouchDB(this.settings.pouch_db);
     },
 
     setFontSize: function() {
@@ -72,6 +80,17 @@ var OCRCorrection = (function($) {
                     });
     },
 
+    loadUser: function() {
+      var user = $.cookie("ocr_correction");
+      if(user){ this.vars.user = user; }
+    },
+    
+    setUserDefaults: function(obj) {
+      if(!obj.userName) { obj.userName = "Anonymous" };
+      if(!obj.userUrl) { obj.userUrl = "#"; }
+      if(!obj.userAvatar) { obj.userAvatar = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjZWVlIj48L3JlY3Q+PHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMzIiIHk9IjMyIiBzdHlsZT0iZmlsbDojYWFhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjEycHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+NjR4NjQ8L3RleHQ+PC9zdmc+"; }
+    },
+
     showPopUp: function(ele) {
       var bbox = $(ele).data("bbox"),
           parts = bbox.split(" "),
@@ -95,21 +114,25 @@ var OCRCorrection = (function($) {
     postEdit: function(ele) {
       var after_text = $(ele).html(),
           timestamp = this.getTime(), //10 digit timestamp for PHP
-          history = this.vars.edit_history;
+          history_item = {};
 
       if (after_text !== this.vars.before_text){
-        history.append(this.formatHistoryItem(after_text));
+        this.setUserDefaults(this.vars.user);
+        history_item = $.extend({},this.vars.user,{ text : after_text });
+        $(_.template(this.vars.edit_history_template.html(), history_item)).prependTo(this.vars.edit_history).hide().slideDown("slow");
         this.vars.pouch.post({
           type: "edit",
           time: timestamp,
           pageId: this.settings.page_id,
           lineId: $(ele).attr("id"),  
           ocr: $(ele).attr("data-ocr"),
-          text: after_text
+          text: after_text,
+          userName : this.vars.user.userName,
+          userAvatar: this.vars.user.userAvatar,
+          userUrl: this.vars.user.userUrl
         });
         
         $(ele).addClass("ocr_edited");
-
         this.synchronize();
       }
     },
@@ -118,8 +141,8 @@ var OCRCorrection = (function($) {
       return parseInt(String(new Date().getTime()).substring(0,10), 10);
     },
 
-    formatHistoryItem: function(after_text) {
-      return '<div class="ocr_edit_item">' + after_text + '</div>';
+    formatHistoryItem: function(obj) {
+      return;
     },
 
     synchronize: function() {
@@ -150,96 +173,113 @@ WIP: offline retrieval from PouchDB
           success: function(response) {
             $.each(response.rows, function() {
               $("#" + this.value.lineId).html(this.value.text).addClass("ocr_edited");
-              self.vars.edit_history.append(self.formatHistoryItem(this.value.text));
+              self.setUserDefaults(this.value);
+              self.vars.edit_history.prepend(_.template(self.vars.edit_history_template.html(), this.value));
             });
           }
         });
       }
     },
   
-  getTextReplacements: function() {
-    var lines = $('.ocr_line').length;
+    getTextReplacements: function() {
+      var lines = $('.ocr_line').length;
 
-    if(this.settings.couch_db) {
-      $.ajax({
-        type: "GET",
-        url: this.settings.diffs_url,
-        dataType: 'json',
-        success: function(response) {
-          for (var lineNum = 0; lineNum < lines; lineNum++) {
-            var line = $("#line" + lineNum);
-            var newText = line.html();
-
-            if (line.length === 0) { break; }
-            
-            $.each(response.rows, function() {
-              if (newText.indexOf(this.key) !== -1) {
-                newText = newText.replace(this.key,
-                  "<span style=\"background-color:orange\">" + this.value + "</span>");
-              }
-            });
-            line.html(newText);
-          }
-        }
-      });
-    }
-  },
-  
-  
-	getWordReplacements: function() 
-	{
-		function getWordAt(str, pos) {
-			var left = str.substr(0, pos);
-			var right = str.substr(pos);
-			left = left.replace(/^.+ /g, "");
-			right = right.replace(/ .+$/g, "");
-			return left + right;
-		}
-	
       if(this.settings.couch_db) {
-	  
-		$.ajax({
+        $.ajax({
           type: "GET",
           url: this.settings.diffs_url,
           dataType: 'json',
-          success: function(response) {	
-			for (var lineNum=0; lineNum >=0; lineNum++) {			
-				var line = $("#line" + lineNum);										
-				
-				if (typeof line != "object")
-				{ 
-					break; 
-				}
-					
-				var newText = line.html();				
-				
-				$.each(response.rows, function() {			
-					var pos = newText.indexOf(this.key);			
-					while (pos != -1) {					
-						var word = getWordAt(newText, pos);
-						newText = newText.replace(word, 
-							"<span title=\"Replace " + this.key + " with " + this.value + "\" style=\"background-color:lavender\">" + word + "</span>");
-							
-						line.html(newText);
-						
-						//move to last replacement
-						pos = newText.lastIndexOf("</span>") + 7;
-						
-						pos = newText.indexOf(this.key, pos)
-					}
-				});
-			}
-		  }
-		});
-	  }
-	}
+          success: function(response) {
+            for (var lineNum = 0; lineNum < lines; lineNum++) {
+              var line = $("#line" + lineNum);
+              var newText = line.html();
+
+              if (line.length === 0) { break; }
+            
+              $.each(response.rows, function() {
+                if (newText.indexOf(this.key) !== -1) {
+                  newText = newText.replace(this.key,
+                    "<span style=\"background-color:orange\">" + this.value + "</span>");
+                }
+              });
+              line.html(newText);
+            }
+          }
+        });
+      }
+    },
+
+    getWordReplacements: function() {
+      function getWordAt(str, pos) {
+        var left = str.substr(0, pos);
+        var right = str.substr(pos);
+        left = left.replace(/^.+ /g, "");
+        right = right.replace(/ .+$/g, "");
+        return left + right;
+      }
+  
+        if(this.settings.couch_db) {
+    
+      $.ajax({
+            type: "GET",
+            url: this.settings.diffs_url,
+            dataType: 'json',
+            success: function(response) { 
+        for (var lineNum=0; lineNum >=0; lineNum++) {     
+          var line = $("#line" + lineNum);                    
+        
+          if (typeof line != "object")
+          { 
+            break; 
+          }
+          
+          var newText = line.html();        
+        
+          $.each(response.rows, function() {      
+            var pos = newText.indexOf(this.key);      
+            while (pos != -1) {         
+              var word = getWordAt(newText, pos);
+              newText = newText.replace(word, 
+                "<span title=\"Replace " + this.key + " with " + this.value + "\" style=\"background-color:lavender\">" + word + "</span>");
+              
+              line.html(newText);
+            
+              //move to last replacement
+              pos = newText.lastIndexOf("</span>") + 7;
+            
+              pos = newText.indexOf(this.key, pos)
+            }
+          });
+        }
+        }
+      });
+      }
+    },
+  
+    bindAuthentication: function() {
+      $('#ocr_signin').on("click", function(e) {
+        e.preventDefault();
+        OAuth.popup("github", function(error, result) {
+          if (error) { return; }
+          result.get("user").done(function(res) {
+            $.cookie('ocr_correction', { userAvatar : res.avatar_url, userName : res.name, userUrl : res.url }, { expires: 7 });
+            window.location.reload(true);
+          });
+        });
+      });
+      $('#ocr_signout').on("click", function(e) {
+        e.preventDefault();
+        $.removeCookie('ocr_correction');
+        window.location.reload(true);
+      });
+    }
 
   };
 
   return {
-    init: function(args) {
+    initialize: function(args) {
       $.extend(_private.settings, args);
-      _private.init();
+      _private.initialize();
     }
   };
 

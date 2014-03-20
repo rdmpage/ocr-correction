@@ -50,8 +50,13 @@ body {
 
 #ocr_edit_history {
   padding-right:40px;
-  height:400px;
+  height:800px;
   overflow:auto;
+  margin-top:40px;
+}
+
+#ocr_edit_history img{
+  width:48px;
 }
 
 .ocr_edit_item {
