@@ -27,9 +27,11 @@ Then restart CouchDB.
 
 See [CORS quickstart](https://gist.github.com/chewbranca/0f690f8c2bfad37a712a)
 
-### Create database and view
+### Create database and views
 
-Create a CouchDB database called "ocr", then create the view page/edits:
+Create a CouchDB database called "ocr"
+
+Create the view page/edits:
 
 ```javascript
 function(doc) {
@@ -39,7 +41,8 @@ function(doc) {
 }
 ```
 
-create view textDiff/textDiff:
+Create view textDiff/textDiff:
+
 Uses javascript from google's text comparison code:
 https://code.google.com/p/google-diff-match-patch/
 
@@ -118,6 +121,14 @@ for(var i = 0; i < diff.length - 1; i++)
     i++;
   }
 }
+}
+```
+
+Create a view to query a page for original lines and all edits
+
+```javascript
+function(doc) {
+  emit([doc.pageId, doc.lineId, doc.time], doc);
 }
 ```
 

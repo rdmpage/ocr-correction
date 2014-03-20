@@ -11,7 +11,7 @@ $directory = $argv[1];
 $couch = new CouchSimple(DB_NAME, DB_HOST, DB_PORT, DB_USER, DB_PASS, true);
 
 $dir_iterator = new RecursiveDirectoryIterator($directory); 
-foreach(new RecursiveIteratorIterator($dir_iterator) as $file =>$key) { 
+foreach(new RecursiveIteratorIterator($dir_iterator) as $file =>$key) {
   $filetypes = array("xml"); 
   $filetype = pathinfo($file, PATHINFO_EXTENSION);
   if (in_array(strtolower($filetype), $filetypes)) {

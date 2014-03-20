@@ -99,7 +99,7 @@ class DjVuView extends DjVu {
         // text
         foreach ($paragraph->lines as $line){
           $ocr_line = new stdclass;
-          $ocr_line->id = "line" . $line_counter++;
+          $ocr_line->id = $line_counter++;
           $ocr_line->fontsize = $fontsize;
           $ocr_line->bbox = $line->bbox;
           $ocr_line->text = preg_replace('/\s+$/', '', $line->text);
@@ -136,7 +136,7 @@ class DjVuView extends DjVu {
     foreach ($this->page_structure->lines as $line){
       $ocr_line = $ocr_page->appendChild($doc->createElement('div'));
 
-      $ocr_line->setAttribute('id', $line->id);
+      $ocr_line->setAttribute('id', "line" . $line->id);
       $ocr_line->setAttribute('class', 'ocr_line');
       $ocr_line->setAttribute('contenteditable', 'true');
       $ocr_line->setAttribute('class', 'ocr_line');

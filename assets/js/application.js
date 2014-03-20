@@ -120,7 +120,7 @@ var OCRCorrection = (function($) {
           type: "edit",
           time: timestamp,
           pageId: this.settings.page_id,
-          lineId: $(ele).attr("id"),  
+          lineId: parseInt($(ele).attr("id").replace("line", ""), 10),
           ocr: $(ele).attr("data-ocr"),
           text: after_text,
           userName : this.vars.user.userName,
@@ -155,7 +155,7 @@ WIP: offline retrieval from PouchDB
 
       this.vars.pouch.query(fun, options, function(err, response) {
         $.each(response.rows, function() {
-          $("#" + this.value.lineId).html(this.value.text).addClass("ocr_edited");
+          $("#line" + this.value.lineId).html(this.value.text).addClass("ocr_edited");
         });
       });
 */
@@ -166,7 +166,7 @@ WIP: offline retrieval from PouchDB
           dataType: 'json',
           success: function(response) {
             $.each(response.rows, function() {
-              $("#" + this.value.lineId).html(this.value.text).addClass("ocr_edited");
+              $("#line" + this.value.lineId).html(this.value.text).addClass("ocr_edited");
               self.setUserDefaults(this.value);
               self.vars.edit_history.prepend(_.template(self.vars.edit_history_template.html(), this.value));
             });
