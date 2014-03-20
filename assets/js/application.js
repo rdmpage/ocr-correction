@@ -204,13 +204,34 @@ WIP: offline retrieval from PouchDB
 
     getWordReplacements: function() {
 
-      function getWordAt(str, pos) {
-        var left = str.substr(0, pos);
-        var right = str.substr(pos);
-        left = left.replace(/^.+ /g, "");
-        right = right.replace(/ .+$/g, "");
-        return left + right;
-      }
+		function getWordAt(str, pos) {
+			var left = str.substr(0, pos);
+			var right = str.substr(pos);
+			left = left.replace(/^.+ /g, "");
+			right = right.replace(/ .+$/g, "");
+			return left + right;
+		}
+		
+		function findNextNonHtmlText(str, text, pos) {
+			var htmlPos = str.indexOf("<", pos);
+			var nextPos = str.indexOf(text, pos);
+			
+			if (htmlPos != -1 && nextPos > htmlPos)
+			{
+				var inHtml = true;
+				while(inHtml) {
+					var endPos = str.indexOf(">", nextPos);
+					htmlPos = str.indexOf("<", nextPos);
+					nextPos = str.indexOf(text, endPos);
+					
+					if (htmlPos == -1 || nextPos < htmlPos || nextPos == -1) {
+						inHtml = false;
+					}
+				}
+			}
+			
+			return nextPos;
+		}
 
       if(this.settings.couch_db) {
         var lines = $('.ocr_line');
@@ -225,7 +246,7 @@ WIP: offline retrieval from PouchDB
                   newText = line.html();
 
               $.each(response.rows, function() {
-                var pos = newText.indexOf(this.key),
+                var pos = findNextNonHtmlText(newText, this.key, 0),
                     word = "";
                 while (pos !== -1) {
                   word = getWordAt(newText, pos);
@@ -236,7 +257,7 @@ WIP: offline retrieval from PouchDB
 
                   //move to last replacement
                   pos = newText.lastIndexOf("</span>") + 7;
-                  pos = newText.indexOf(this.key, pos)
+                  pos = findNextNonHtmlText(newText, this.key, pos)
                 }
               });
 

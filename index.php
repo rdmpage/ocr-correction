@@ -2,7 +2,7 @@
 require_once(dirname(__FILE__) . '/config/config.inc.php');
 require_once(dirname(__FILE__) . '/lib/djvu.view.class.php');
 
-$PageID = 16002438;
+$PageID = 16002437;
 $PageWidth = 800;
 $CouchDB = "http://" . DB_HOST . ":" . DB_PORT . "/" . DB_NAME;
 
@@ -41,7 +41,7 @@ $(function() {
     couch_db : "<?php echo $CouchDB; ?>",
     page_id : <?php echo $PageID; ?>,
     page_width : <?php echo $PageWidth ?>,
-    show_replacements : true,
+    show_replacements : false,
     show_word_replacements : true
   });
   OAuth.initialize('<?php echo OAUTH_KEY; ?>');
