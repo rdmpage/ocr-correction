@@ -65,7 +65,7 @@ var OCRCorrection = (function($) {
 
       $('.ocr_page').find('.ocr_line')
                     .on('focus', function() {
-                      self.vars.before_text = $(this).html();
+                      self.vars.before_text = $(this).text();
                       self.showPopUp(this); })
                     .on('blur', function() {
                       self.closePopUp();
@@ -116,9 +116,6 @@ var OCRCorrection = (function($) {
           history_item = {};
 
       if (after_text !== this.vars.before_text){
-        this.setUserDefaults(this.vars.user);
-        history_item = $.extend({},this.vars.user,{ text : after_text });
-        $(_.template(this.vars.edit_history_template.html(), history_item)).prependTo(this.vars.edit_history).hide().slideDown("slow");
         this.vars.pouch.post({
           type: "edit",
           time: timestamp,
@@ -130,7 +127,9 @@ var OCRCorrection = (function($) {
           userAvatar: this.vars.user.userAvatar,
           userUrl: this.vars.user.userUrl
         });
-        
+        this.setUserDefaults(this.vars.user);
+        history_item = $.extend({},this.vars.user,{ text : after_text });
+        $(_.template(this.vars.edit_history_template.html(), history_item)).prependTo(this.vars.edit_history).hide().slideDown("slow");
         $(ele).addClass("ocr_edited");
         this.synchronize();
       }
@@ -186,15 +185,10 @@ WIP: offline retrieval from PouchDB
           dataType: 'json',
           success: function(response) {
             $.each(lines, function(i) {
-              var line = $("#line" + i),
-                  newText = line.html();
+              var line = $("#line" + i);
               $.each(response.rows, function() {
-                if (line.html().indexOf(this.key) !== -1) {
-                  newText = newText.replace(this.key,
-                    "<span style=\"background-color:orange\">" + this.value + "</span>");
-                }
+                line.highlight(this.value, { className: 'highlight-orange' });
               });
-              line.html(newText);
             });
           }
         });
