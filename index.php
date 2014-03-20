@@ -2,7 +2,7 @@
 require_once(dirname(__FILE__) . '/config/config.inc.php');
 require_once(dirname(__FILE__) . '/lib/djvu.view.class.php');
 
-$PageID = 16002437;
+$PageID = 34570741;
 $PageWidth = 800;
 $CouchDB = "http://" . DB_HOST . ":" . DB_PORT . "/" . DB_NAME;
 
@@ -33,6 +33,7 @@ $html = $djvu->createHTML();
 <script src="assets/js/underscore-min.js"></script>
 <script src="assets/js/pouchdb-2.0.0.min.js"></script>
 <script src="assets/js/oauth.js"></script>
+<script src="assets/js/jquery.highlight.min.js"></script>
 <script src="assets/js/application.js"></script>
 <script>
 $(function() {
@@ -40,8 +41,8 @@ $(function() {
     pouch_db : "ocr",
     couch_db : "<?php echo $CouchDB; ?>",
     page_id : <?php echo $PageID; ?>,
-    show_replacements : false,
-    show_word_replacements : true
+    show_replacements : true,
+    show_word_replacements : false
   });
   OAuth.initialize('<?php echo OAUTH_KEY; ?>');
 });

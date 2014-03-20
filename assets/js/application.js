@@ -185,15 +185,10 @@ WIP: offline retrieval from PouchDB
           dataType: 'json',
           success: function(response) {
             $.each(lines, function(i) {
-              var line = $("#line" + i),
-                  newText = line.html();
+              var line = $("#line" + i);
               $.each(response.rows, function() {
-                if (line.html().indexOf(this.key) !== -1) {
-                  newText = newText.replace(this.key,
-                    "<span style=\"background-color:orange\">" + this.value + "</span>");
-                }
+                line.highlight(this.value, { className: 'highlight-orange' });
               });
-              line.html(newText);
             });
           }
         });
