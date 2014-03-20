@@ -26,7 +26,7 @@ foreach(new RecursiveIteratorIterator($dir_iterator) as $file =>$key) {
       $doc->pageId = $page_id;
       $doc->lineId = $line->id;
       $doc->ocr = $line->text;
-      $doc->user = 0;
+      $doc->text = $line->text;
       $doc->time = time();
       $couch->storeDoc($doc);
     }

@@ -41,8 +41,8 @@ $(function() {
     pouch_db : "ocr",
     couch_db : "<?php echo $CouchDB; ?>",
     page_id : <?php echo $PageID; ?>,
-    show_replacements : true,
-    show_word_replacements : false
+    show_replacements : false,
+    show_word_replacements : true
   });
   OAuth.initialize('<?php echo OAUTH_KEY; ?>');
 });
