@@ -32,5 +32,5 @@ foreach($rows as $row) {
 }
 
 $fp = fopen($directory . "/" . $PageID . ".txt","wb");
-fwrite($fp,implode("\n", $output));
+fwrite($fp,implode(" \n", $output));
 fclose($fp);
