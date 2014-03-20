@@ -9,7 +9,6 @@ var OCRCorrection = (function($) {
       edits_url : './edit.php?pageId=',
       diffs_url : './textreplacement.php',
       page_id : 0,
-      page_width : 800,
       couch_db: "",
       pouch_db: "ocr",
       show_replacements: false,
@@ -112,7 +111,7 @@ var OCRCorrection = (function($) {
     },
 
     postEdit: function(ele) {
-      var after_text = $(ele).html(),
+      var after_text = $(ele).text(),
           timestamp = this.getTime(), //10 digit timestamp for PHP
           history_item = {};
 

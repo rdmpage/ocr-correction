@@ -140,7 +140,7 @@ class DjVuView extends DjVu {
       $ocr_line->setAttribute('class', 'ocr_line');
       $ocr_line->setAttribute('contenteditable', 'true');
       $ocr_line->setAttribute('class', 'ocr_line');
-      $ocr_line->setAttribute('style', 'font-size:' . $line->fontsize . 'px;line-height:' . $line->fontsize . 'px;position:absolute;left:' . ($line->bbox[0] * $scale) . 'px;top:' . ($line->bbox[3] * $scale)  . 'px;min-width:' . ($scale *($line->bbox[2] - $line->bbox[0])) . 'px;height:' . ($scale *($line->bbox[1] - $line->bbox[3])) . 'px;');
+      $ocr_line->setAttribute('style', 'font-size:' . $line->fontsize . 'px;line-height:' . $line->fontsize . 'px;position:absolute;left:' . ($line->bbox[0] * $scale) . 'px;top:' . ($line->bbox[3] * $scale)  . 'px;min-width:' . ($scale * ($line->bbox[2] - $line->bbox[0])) . 'px;height:' . ($scale * ($line->bbox[1] - $line->bbox[3])) . 'px;');
       $ocr_line->setAttribute('data-bbox', 'bbox ' . ($line->bbox[0] * $scale) . ' ' . ($line->bbox[3] * $scale)  . ' ' . ($scale *$line->bbox[2])  . ' ' . ($scale *$line->bbox[1]) );
 
       // original OCR
