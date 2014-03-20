@@ -219,8 +219,8 @@ WIP: offline retrieval from PouchDB
 			{
 				var inHtml = true;
 				while(inHtml) {
-					var endPos = str.indexOf(">", nextPos);
-					htmlPos = str.indexOf("<", nextPos);
+					var endPos = str.indexOf(">", htmlPos);
+					htmlPos = str.indexOf("<", endPos);
 					nextPos = str.indexOf(text, endPos);
 					
 					if (htmlPos == -1 || nextPos < htmlPos || nextPos == -1) {
@@ -231,7 +231,7 @@ WIP: offline retrieval from PouchDB
 			
 			return nextPos;
 		}
-
+		
       if(this.settings.couch_db) {
         var lines = $('.ocr_line');
 
@@ -245,21 +245,29 @@ WIP: offline retrieval from PouchDB
                   newText = line.html();
 
               $.each(response.rows, function() {
-                var pos = findNextNonHtmlText(newText, this.key, 0),
-                    word = "";
-                while (pos !== -1) {
-                  word = getWordAt(newText, pos);
-                  newText = newText.replace(word, 
-                    "<span title=\"Replace " + this.key + " with " + this.value + "\" style=\"background-color:lavender\">" + word + "</span>");
-
-                  line.html(newText);
-
-                  //move to last replacement
-                  pos = newText.lastIndexOf("</span>") + 7;
-                  pos = findNextNonHtmlText(newText, this.key, pos)
-                }
-              });
-
+					if (this.key.length > 0) { //not sure we care about single char changes
+					
+						var pos = findNextNonHtmlText(newText, this.key, 0),
+							word = "";			
+						while (pos != -1) {	
+							word = getWordAt(newText, pos);
+							
+							//work out word start pos :-/
+							var startPos = pos - word.indexOf(this.key);
+							
+							newText = newText.slice(0, startPos) + 
+								"<span title=\"Replace " + this.key + " with " + this.value + "\" style=\"background-color:lavender\">" + word + "</span>"
+								+ newText.slice(startPos + word.length);
+																		
+							//move to last replacement
+							pos = newText.lastIndexOf("</span>") + 7;
+							
+							pos = findNextNonHtmlText(newText, this.key, pos);
+						}
+					}
+                });
+				
+				line.html(newText);
             });
           }
         });
