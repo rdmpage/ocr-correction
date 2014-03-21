@@ -8,6 +8,9 @@ env:
     - HOST=www.ocr-correction.local
     - BROWSER=firefox
 
+services:
+  - couchdb
+
 before_install:
   # Selenium
   - "export DISPLAY=:99.0"
@@ -41,9 +44,9 @@ before_script:
   
   # CouchDB configuration
   - sudo service couchdb start
-  - curl -X PUT "http://localhost:5984/ocr"
-  - curl -X PUT "http://localhost:5984/ocr/_design/page" -H "Content-Type:application/json" -d@.travis/couchdb/page.json
-  - curl -X PUT "http://localhost:5984/ocr/_design/textDiff" -H "Content-Type:application/json" -d@.travis/couchdb/textDiff.json
+  - curl -X PUT localhost:5984/ocr
+  - curl -X PUT localhost:5984/ocr/_design/page -H "Content-Type:application/json" -d@.travis/couchdb/page.json
+  - curl -X PUT localhost:5984/ocr/_design/textDiff -H "Content-Type:application/json" -d@.travis/couchdb/textDiff.json
 
 script:
   # - phpunit -c Tests/chrome.phpunit.xml --stderr

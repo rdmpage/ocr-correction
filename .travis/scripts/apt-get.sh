@@ -10,7 +10,6 @@ autoconf \
 freetype* \
 php-pear \
 xvfb \
-couchdb \
 cmake"
 
 if [ "$1" ]
