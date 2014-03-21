@@ -43,6 +43,7 @@ var OCRCorrection = (function($) {
     setVariables: function() {
       this.vars.edit_history = $("#ocr_edit_history");
       this.vars.edit_history_template = $('#ocr_history_item');
+      this.vars.name_tooltip_template = $('#name_tooltip'),
       this.vars.ocr_img_container = $('#ocr_image_container');
       this.vars.ocr_img = $("#ocr_image");
       this.vars.pouch = new PouchDB(this.settings.couch_db);
@@ -127,24 +128,23 @@ var OCRCorrection = (function($) {
           userAvatar: this.vars.user.userAvatar,
           userUrl: this.vars.user.userUrl
         });
-		
-		//any names found in edited text?
+    
+        //any names found in edited text?
         $.ajax({
           type: "GET",
           url: "./findnames.php?text=" + after_text,
           dataType: 'json',
           success: function(response) {
-			if (response.names.length > 0) {
-				$(ele).tooltipster({
-					content: $('<span>Name found in edited text: ' + response.names[0].identifiedName + '</span>'),
-					interactive: true
-				});
-				$(ele).tooltipster('show');
-				
-			}
+            if (response.names.length > 0) {
+              $(ele).tooltipster({
+                content: _.template(this.vars.name_tooltip_template.html(), response.names[0].identifiedName),
+                interactive: true
+              });
+              $(ele).tooltipster('show');
+            }
           }
         });
-		
+    
         this.setUserDefaults(this.vars.user);
         history_item = $.extend({},this.vars.user,{ text : after_text });
         $(_.template(this.vars.edit_history_template.html(), history_item)).prependTo(this.vars.edit_history).hide().slideDown("slow");
@@ -215,55 +215,55 @@ WIP: offline retrieval from PouchDB
 
     getWordReplacements: function() {
 
-		function getWordAt(str, pos) {
-			var left = str.substr(0, pos);
-			var right = str.substr(pos);
-			var letters = /^[0-9a-zA-Z]+$/;  
+    function getWordAt(str, pos) {
+      var left = str.substr(0, pos);
+      var right = str.substr(pos);
+      var letters = /^[0-9a-zA-Z]+$/;  
 
-			//find left end
-			var leftPos = 0;
-			if (left.length > 0) {
-				leftPos = left.length - 1;
-				while (left.substr(leftPos,1).match(letters) && leftPos > 0) {
-					leftPos--;
-				}
-				if (!left.substr(leftPos,1).match(letters)) leftPos++;
-			}
-			
-			//find right end
-			var rightPos = 0;
-			if (right.length > 0) {
-				rightPos = 0;
-				while (right.substr(rightPos,1).match(letters) && rightPos < right.length - 1) {
-					rightPos++;
-				}
-				if (right.substr(rightPos,1).match(letters)) rightPos++;
-			}
-			
-			return left.substr(leftPos) + right.substr(0, rightPos);
-		}
-		
-		function findNextNonHtmlText(str, text, pos) {
-			var htmlPos = str.indexOf("<", pos);
-			var nextPos = str.indexOf(text, pos);
-			
-			if (htmlPos != -1 && nextPos > htmlPos)
-			{
-				var inHtml = true;
-				while(inHtml) {
-					var endPos = str.indexOf(">", htmlPos);
-					htmlPos = str.indexOf("<", endPos);
-					nextPos = str.indexOf(text, endPos);
-					
-					if (htmlPos == -1 || nextPos < htmlPos || nextPos == -1) {
-						inHtml = false;
-					}
-				}
-			}
-			
-			return nextPos;
-		}
-		
+      //find left end
+      var leftPos = 0;
+      if (left.length > 0) {
+        leftPos = left.length - 1;
+        while (left.substr(leftPos,1).match(letters) && leftPos > 0) {
+          leftPos--;
+        }
+        if (!left.substr(leftPos,1).match(letters)) leftPos++;
+      }
+      
+      //find right end
+      var rightPos = 0;
+      if (right.length > 0) {
+        rightPos = 0;
+        while (right.substr(rightPos,1).match(letters) && rightPos < right.length - 1) {
+          rightPos++;
+        }
+        if (right.substr(rightPos,1).match(letters)) rightPos++;
+      }
+      
+      return left.substr(leftPos) + right.substr(0, rightPos);
+    }
+    
+    function findNextNonHtmlText(str, text, pos) {
+      var htmlPos = str.indexOf("<", pos);
+      var nextPos = str.indexOf(text, pos);
+      
+      if (htmlPos != -1 && nextPos > htmlPos)
+      {
+        var inHtml = true;
+        while(inHtml) {
+          var endPos = str.indexOf(">", htmlPos);
+          htmlPos = str.indexOf("<", endPos);
+          nextPos = str.indexOf(text, endPos);
+          
+          if (htmlPos == -1 || nextPos < htmlPos || nextPos == -1) {
+            inHtml = false;
+          }
+        }
+      }
+      
+      return nextPos;
+    }
+    
       if(this.settings.couch_db) {
         var lines = $('.ocr_line');
 
@@ -277,29 +277,29 @@ WIP: offline retrieval from PouchDB
                   newText = line.html();
 
               $.each(response.rows, function() {
-					if (this.key.length > 1) { //not sure we care about single char changes
-					
-						var pos = findNextNonHtmlText(newText, this.key, 0),
-							word = "";		
-						while (pos != -1) {	
-							word = getWordAt(newText, pos);
+          if (this.key.length > 1) { //not sure we care about single char changes
+          
+            var pos = findNextNonHtmlText(newText, this.key, 0),
+              word = "";    
+            while (pos != -1) { 
+              word = getWordAt(newText, pos);
 
-							//work out word start pos :-/
-							var startPos = pos - word.indexOf(this.key);
-							
-							newText = newText.slice(0, startPos) + 
-								"<span title=\"Replace " + this.key + " with " + this.value + "\" style=\"background-color:lavender\">" + word + "</span>"
-								+ newText.slice(startPos + word.length);
-																		
-							//move to last replacement
-							pos = newText.lastIndexOf("</span>") + 7;
-							
-							pos = findNextNonHtmlText(newText, this.key, pos);							
-						}
-					}
+              //work out word start pos :-/
+              var startPos = pos - word.indexOf(this.key);
+              
+              newText = newText.slice(0, startPos) + 
+                "<span title=\"Replace " + this.key + " with " + this.value + "\" style=\"background-color:lavender\">" + word + "</span>"
+                + newText.slice(startPos + word.length);
+                                    
+              //move to last replacement
+              pos = newText.lastIndexOf("</span>") + 7;
+              
+              pos = findNextNonHtmlText(newText, this.key, pos);              
+            }
+          }
                 });
-				
-				line.html(newText);
+        
+        line.html(newText);
             });
           }
         });
