@@ -99,7 +99,7 @@ $(function() {
 </script>
 
 <script type="text/template" id="name_tooltip">
-  <<span>Name found in edited text: <%=name%></span>
+  <span>Name found in edited text: <%=name%></span>
 </script>
 
 </body>
