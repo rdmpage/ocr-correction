@@ -304,34 +304,33 @@ WIP: offline retrieval from PouchDB
                   newText = line.html();
 
               $.each(response.rows, function() {
-          if (this.key.length > 1) { //not sure we care about single char changes
-          
-            var pos = findNextNonHtmlText(newText, this.key, 0),
-              word = "", startPos;
-            while (pos !== -1) { 
-              word = getWordAt(newText, pos);
+                if (this.key.length > 1) { //not sure we care about single char changes
+                  var pos = findNextNonHtmlText(newText, this.key, 0),
+                      word = "", startPos;
 
-              //work out word start pos :-/
-              startPos = pos - word.indexOf(this.key);
-              newText = newText.slice(0, startPos) + 
-                _.template(self.vars.word_replacement_template.html(), { key : this.key, value : this.value, word : word })
-                + newText.slice(startPos + word.length);
+                  while (pos !== -1) { 
+                    word = getWordAt(newText, pos);
+
+                    //work out word start pos :-/
+                    startPos = pos - word.indexOf(this.key);
+                    newText = newText.slice(0, startPos) + 
+                    _.template(self.vars.word_replacement_template.html(), { key : this.key, value : this.value, word : word })
+                    + newText.slice(startPos + word.length);
                                     
-              //move to last replacement
-              pos = newText.lastIndexOf("</span>") + 7;
-              
-              pos = findNextNonHtmlText(newText, this.key, pos);              
-            }
-          }
-                });
-        
-        line.html(newText);
+                    //move to last replacement
+                    pos = newText.lastIndexOf("</span>") + 7;
+                    pos = findNextNonHtmlText(newText, this.key, pos);              
+                  }
+                }
+              });
+
+              line.html(newText);
             });
           }
         });
       }
     },
-  
+
     bindAuthentication: function() {
       $('#ocr_signin').on("click", function(e) {
         e.preventDefault();
