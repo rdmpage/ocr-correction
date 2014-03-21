@@ -88,7 +88,7 @@ $(function() {
   </div>
 </div>
 
-<script type="text/template" id="ocr_history_item">
+<script type="text/template" id="ocr_history_template">
 <div class="ocr_edit_item media">
   <a href="#" class="pull-left" href="<%=userUrl %>"><img src = "<%=userAvatar %>" class="media-object" width="48" alt="<%=userName %>" /></a>
   <div class="media-body">
@@ -98,8 +98,12 @@ $(function() {
 </div>
 </script>
 
-<script type="text/template" id="name_tooltip">
+<script type="text/template" id="name_tooltip_template">
   <span>Name found in edited text: <%=name%></span>
+</script>
+
+<script type="text/template" id="word_replacement_template">
+  <span title="Replace <%= key %> with <%=value %>" style="background-color:lavender"><%= word %></span>
 </script>
 
 </body>

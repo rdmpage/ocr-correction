@@ -19,6 +19,9 @@ var OCRCorrection = (function($) {
       ocr_img_container : {},
       ocr_img : {},
       edit_history: {},
+      edit_history_template: {},
+      name_tooltip_template: {},
+      word_replacement_template: {},
       before_text : "",
       pouch: {},
       user: {
@@ -43,8 +46,9 @@ var OCRCorrection = (function($) {
 
     setVariables: function() {
       this.vars.edit_history = $("#ocr_edit_history");
-      this.vars.edit_history_template = $('#ocr_history_item');
-      this.vars.name_tooltip_template = $('#name_tooltip');
+      this.vars.edit_history_template = $('#ocr_history_template');
+      this.vars.name_tooltip_template = $('#name_tooltip_template');
+      this.vars.word_replacement_template = $('#word_replacement_template');
       this.vars.ocr_img_container = $('#ocr_image_container');
       this.vars.ocr_img = $("#ocr_image");
       this.vars.pouch = new PouchDB(this.settings.couch_db);
@@ -237,6 +241,7 @@ WIP: offline retrieval from PouchDB
     },
 
     getWordReplacements: function() {
+      var self = this;
 
       function getWordAt(str, pos) {
         var left = str.substr(0, pos);
@@ -308,9 +313,8 @@ WIP: offline retrieval from PouchDB
 
               //work out word start pos :-/
               startPos = pos - word.indexOf(this.key);
-              
               newText = newText.slice(0, startPos) + 
-                "<span title=\"Replace " + this.key + " with " + this.value + "\" style=\"background-color:lavender\">" + word + "</span>"
+                _.template(self.vars.word_replacement_template.html(), { key : this.key, value : this.value, word : word })
                 + newText.slice(startPos + word.length);
                                     
               //move to last replacement
