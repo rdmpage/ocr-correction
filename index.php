@@ -14,6 +14,7 @@ $djvu->setImageWidth($PageWidth)
      ->setImageURL($image_filename)
      ->addFontmetrics()
      ->addLines();
+
 $html = $djvu->createHTML();
 ?>
 
@@ -21,6 +22,7 @@ $html = $djvu->createHTML();
 <head>
 <meta charset="utf-8">
 <meta name="ocr-capabilities" content="ocr_carea ocr_line ocr_page ocr_par">
+<title>OCR Correction</title>
 <link type="text/css" href="assets/css/bootstrap.css" rel="stylesheet" />
 <link type="text/css" href="assets/css/bootstrap-responsive.css" rel="stylesheet" />
 <link type="text/css" href="assets/css/styles.css" rel="stylesheet" media="screen" />

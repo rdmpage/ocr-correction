@@ -1,0 +1,53 @@
+language: php
+
+php:
+  - 5.5
+
+env:
+  global:
+    - HOST=www.ocr-correction.local
+    - BROWSER=firefox
+
+services:
+  - couchdb
+
+before_install:
+  # Selenium
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - "wget http://selenium.googlecode.com/files/selenium-server-standalone-2.39.0.jar"
+  # - "java -jar selenium-server-standalone-2.39.0.jar -Dwebdriver.chrome.driver=/usr/bin/chromedriver > /dev/null &"
+  - "java -jar selenium-server-standalone-2.39.0.jar > /dev/null &"
+  - sleep 10
+
+install:
+  # Install dependencies
+  - sh -e .travis/scripts/apt-get.sh
+
+before_script:
+
+  # Apache config
+  # enable php-fpm because Travis doesn't do libapache2-mod-php5
+  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
+  - sh -e .travis/scripts/apache2-configure.sh
+  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+
+  # Apache web server config for vhosts
+  - sh -e .travis/scripts/apache2-vhost.sh "$HOST"
+
+  # PHP config
+  - phpenv config-add .travis/travis.php.ini
+
+  # Restart Apache
+  - sudo service apache2 restart
+  
+  # CouchDB configuration
+  - sudo service couchdb start
+  - curl -X PUT localhost:5984/ocr
+  - curl -X PUT localhost:5984/ocr/_design/page -H "Content-Type:application/json" -d@.travis/couchdb/page.json
+  - curl -X PUT localhost:5984/ocr/_design/textDiff -H "Content-Type:application/json" -d@.travis/couchdb/textDiff.json
+
+script:
+  # - phpunit -c Tests/chrome.phpunit.xml --stderr
+  - phpunit -c Tests/$BROWSER.phpunit.xml --stderr

@@ -83,7 +83,7 @@ var OCRCorrection = (function($) {
       var user = $.cookie("ocr_correction");
       if(user){ this.vars.user = user; }
     },
-    
+
     setUserDefaults: function(obj) {
       if(!obj.userName) { obj.userName = "Anonymous"; }
       if(!obj.userUrl) { obj.userUrl = "#"; }

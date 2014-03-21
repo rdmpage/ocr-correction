@@ -3,6 +3,8 @@ OCR correction in browser for Leiden Hackathon
 
 Web interface for correcting OCR text from BHL. Goal is to provide a simple interface for interactive editing of text, as well as tools to make inferences from the edits (e.g., frequency of certain kinds of OCR errors).
 
+[![Build Status](https://secure.travis-ci.org/rdmpage/ocr-correction.png?branch=master)](http://travis-ci.org/rdmpage/ocr-correction)
+
 ## Requirements
 
 This code requires [CouchDB](http://couchdb.apache.org), PHP, and a local web server. It also uses [PouchDB](http://pouchdb.com).
@@ -154,3 +156,16 @@ The /bin directory includes two PHP scripts to be executed from the command line
 ```bash
   $ php ./bin/couch_text.php 34570741 /output/directory
 ```
+
+Tests
+-----
+
+Selenium is used for integration tests and php-unit for unit tests. Facebook's [php-webdriver](https://github.com/facebook/php-webdriver) is included. Get selenium at [https://code.google.com/p/selenium/downloads/list](https://code.google.com/p/selenium/downloads/list) then execute:
+
+    $ java -jar selenium-server-standalone-2.39.0.jar
+    $ phpunit -c Tests/firefox.phpunit.xml --stderr
+
+If you wish to use Chrome instead of FireFox, the Selenium Chromedriver can be found at [http://chromedriver.storage.googleapis.com/index.html](http://chromedriver.storage.googleapis.com/index.html):
+
+    $ java -jar selenium-server-standalone-2.39.0.jar -Dwebdriver.chrome.driver=/usr/bin/chromedriver
+    $ phpunit -c Tests/chrome.phpunit.xml --stderr
