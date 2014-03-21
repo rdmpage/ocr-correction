@@ -127,6 +127,24 @@ var OCRCorrection = (function($) {
           userAvatar: this.vars.user.userAvatar,
           userUrl: this.vars.user.userUrl
         });
+		
+		//any names found in edited text?
+        $.ajax({
+          type: "GET",
+          url: "./findnames.php?text=" + after_text,
+          dataType: 'json',
+          success: function(response) {
+			if (response.names.length > 0) {
+				$(ele).tooltipster({
+					content: $('<span>Name found in edited text: ' + response.names[0].identifiedName + '</span>'),
+					interactive: true
+				});
+				$(ele).tooltipster('show');
+				
+			}
+          }
+        });
+		
         this.setUserDefaults(this.vars.user);
         history_item = $.extend({},this.vars.user,{ text : after_text });
         $(_.template(this.vars.edit_history_template.html(), history_item)).prependTo(this.vars.edit_history).hide().slideDown("slow");

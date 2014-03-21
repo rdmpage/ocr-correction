@@ -2,7 +2,7 @@
 require_once(dirname(__FILE__) . '/config/config.inc.php');
 require_once(dirname(__FILE__) . '/lib/djvu.view.class.php');
 
-$PageID = 34570741;
+$PageID = 16002437;
 $PageWidth = 800;
 $CouchDB = "http://" . DB_HOST . ":" . DB_PORT . "/" . DB_NAME;
 
@@ -24,6 +24,7 @@ $html = $djvu->createHTML();
 <link type="text/css" href="assets/css/bootstrap.css" rel="stylesheet" />
 <link type="text/css" href="assets/css/bootstrap-responsive.css" rel="stylesheet" />
 <link type="text/css" href="assets/css/styles.css" rel="stylesheet" media="screen" />
+<link type="text/css" href="assets/css/tooltipster.css" rel="stylesheet" media="screen" />
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
   <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -35,6 +36,7 @@ $html = $djvu->createHTML();
 <script src="assets/js/oauth.js"></script>
 <script src="assets/js/jquery.highlight.min.js"></script>
 <script src="assets/js/application.js"></script>
+<script src="assets/js/jquery.tooltipster.js"></script>
 <script>
 $(function() {
   OCRCorrection.initialize({
