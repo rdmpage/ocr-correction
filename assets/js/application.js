@@ -1,4 +1,4 @@
-/*global jQuery, window, document, self, alert, PouchDB, _ */
+/*global jQuery, window, document, self, alert, PouchDB, _, OAuth */
 var OCRCorrection = (function($) {
 
   "use strict";
@@ -25,7 +25,8 @@ var OCRCorrection = (function($) {
         userAvatar : "",
         userName : "",
         userUrl : ""
-      }
+      },
+      gnrd_resource : "http://gnrd.globalnames.org/name_finder.json"
     },
 
     initialize: function() {
@@ -43,7 +44,7 @@ var OCRCorrection = (function($) {
     setVariables: function() {
       this.vars.edit_history = $("#ocr_edit_history");
       this.vars.edit_history_template = $('#ocr_history_item');
-      this.vars.name_tooltip_template = $('#name_tooltip'),
+      this.vars.name_tooltip_template = $('#name_tooltip');
       this.vars.ocr_img_container = $('#ocr_image_container');
       this.vars.ocr_img = $("#ocr_image");
       this.vars.pouch = new PouchDB(this.settings.couch_db);
@@ -112,10 +113,10 @@ var OCRCorrection = (function($) {
     },
 
     postEdit: function(ele) {
-      var self = this,
-          after_text = $(ele).text(),
+      var after_text = $(ele).text(),
           timestamp = this.getTime(), //10 digit timestamp for PHP
-          history_item = {};
+          history_item = {},
+          url = "";
 
       if (after_text !== this.vars.before_text){
         this.vars.pouch.post({
@@ -129,23 +130,11 @@ var OCRCorrection = (function($) {
           userAvatar: this.vars.user.userAvatar,
           userUrl: this.vars.user.userUrl
         });
-    
+
         //any names found in edited text?
-        $.ajax({
-          type: "GET",
-          url: "./findnames.php?text=" + after_text,
-          dataType: 'json',
-          success: function(response) {
-            if (response.names.length > 0) {
-              $(ele).tooltipster({
-                content: $(_.template(self.vars.name_tooltip_template.html(), { name : response.names[0].identifiedName })),
-                interactive: true
-              });
-              $(ele).tooltipster('show');
-            }
-          }
-        });
-    
+        url = this.vars.gnrd_resource + "?text=" + encodeURIComponent(after_text);
+        this.findNames(ele, url);
+
         this.setUserDefaults(this.vars.user);
         history_item = $.extend({},this.vars.user,{ text : after_text });
         $(_.template(this.vars.edit_history_template.html(), history_item)).prependTo(this.vars.edit_history).hide().slideDown("slow");
@@ -156,6 +145,39 @@ var OCRCorrection = (function($) {
 
     getTime: function() {
       return parseInt(String(new Date().getTime()).substring(0,10), 10);
+    },
+
+    sleep: function(milliseconds) {
+      var start = new Date().getTime(), i;
+      for (i = 0; i < 1e7; i += 1) {
+        if ((new Date().getTime() - start) > milliseconds){
+          break;
+        }
+      }
+    },
+
+    findNames: function(ele, url) {
+      var self = this;
+      
+      $.ajax({
+        type: "GET",
+        url: url,
+        dataType: 'json',
+        success: function(response) {
+          if (response.status === 303) {
+            self.sleep(2000);
+            self.findNames(ele, response.token_url);
+          } else if(response.status === 200) {
+            if(response.names.length > 0) {
+              $(ele).tooltipster({
+                content: $(_.template(self.vars.name_tooltip_template.html(), { name : response.names[0].identifiedName })),
+                interactive: true
+              });
+              $(ele).tooltipster('show');
+            }
+          }
+        }
+      });
     },
 
     synchronize: function() {
@@ -216,55 +238,54 @@ WIP: offline retrieval from PouchDB
 
     getWordReplacements: function() {
 
-    function getWordAt(str, pos) {
-      var left = str.substr(0, pos);
-      var right = str.substr(pos);
-      var letters = /^[0-9a-zA-Z]+$/;  
+      function getWordAt(str, pos) {
+        var left = str.substr(0, pos);
+        var right = str.substr(pos);
+        var letters = /^[0-9a-zA-Z]+$/;  
 
-      //find left end
-      var leftPos = 0;
-      if (left.length > 0) {
-        leftPos = left.length - 1;
-        while (left.substr(leftPos,1).match(letters) && leftPos > 0) {
-          leftPos--;
+        //find left end
+        var leftPos = 0;
+        if (left.length > 0) {
+          leftPos = left.length - 1;
+          while (left.substr(leftPos,1).match(letters) && leftPos > 0) {
+            leftPos -= 1;
+          }
+          if (!left.substr(leftPos,1).match(letters)) { leftPos += 1; }
         }
-        if (!left.substr(leftPos,1).match(letters)) leftPos++;
-      }
-      
-      //find right end
-      var rightPos = 0;
-      if (right.length > 0) {
-        rightPos = 0;
-        while (right.substr(rightPos,1).match(letters) && rightPos < right.length - 1) {
-          rightPos++;
+
+        //find right end
+        var rightPos = 0;
+        if (right.length > 0) {
+          rightPos = 0;
+          while (right.substr(rightPos,1).match(letters) && rightPos < right.length - 1) {
+            rightPos += 1;
+          }
+          if (right.substr(rightPos,1).match(letters)) { rightPos += 1; }
         }
-        if (right.substr(rightPos,1).match(letters)) rightPos++;
+
+        return left.substr(leftPos) + right.substr(0, rightPos);
       }
-      
-      return left.substr(leftPos) + right.substr(0, rightPos);
-    }
     
-    function findNextNonHtmlText(str, text, pos) {
-      var htmlPos = str.indexOf("<", pos);
-      var nextPos = str.indexOf(text, pos);
-      
-      if (htmlPos != -1 && nextPos > htmlPos)
-      {
-        var inHtml = true;
-        while(inHtml) {
-          var endPos = str.indexOf(">", htmlPos);
-          htmlPos = str.indexOf("<", endPos);
-          nextPos = str.indexOf(text, endPos);
-          
-          if (htmlPos == -1 || nextPos < htmlPos || nextPos == -1) {
-            inHtml = false;
+      function findNextNonHtmlText(str, text, pos) {
+        var htmlPos = str.indexOf("<", pos);
+        var nextPos = str.indexOf(text, pos);
+
+        if (htmlPos !== -1 && nextPos > htmlPos) {
+          var inHtml = true, endPos;
+          while(inHtml) {
+            endPos = str.indexOf(">", htmlPos);
+            htmlPos = str.indexOf("<", endPos);
+            nextPos = str.indexOf(text, endPos);
+
+            if (htmlPos === -1 || nextPos < htmlPos || nextPos === -1) {
+              inHtml = false;
+            }
           }
         }
+
+        return nextPos;
       }
-      
-      return nextPos;
-    }
-    
+
       if(this.settings.couch_db) {
         var lines = $('.ocr_line');
 
@@ -281,12 +302,12 @@ WIP: offline retrieval from PouchDB
           if (this.key.length > 1) { //not sure we care about single char changes
           
             var pos = findNextNonHtmlText(newText, this.key, 0),
-              word = "";    
-            while (pos != -1) { 
+              word = "", startPos;
+            while (pos !== -1) { 
               word = getWordAt(newText, pos);
 
               //work out word start pos :-/
-              var startPos = pos - word.indexOf(this.key);
+              startPos = pos - word.indexOf(this.key);
               
               newText = newText.slice(0, startPos) + 
                 "<span title=\"Replace " + this.key + " with " + this.value + "\" style=\"background-color:lavender\">" + word + "</span>"
