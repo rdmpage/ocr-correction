@@ -22,8 +22,6 @@ install:
   - sh -e .travis/scripts/apt-get.sh
 
 before_script:
-  # Directory permissions
-  - sh -e .travis/scripts/permissions.sh
 
   # Apache config
   # enable php-fpm because Travis doesn't do libapache2-mod-php5
@@ -40,6 +38,11 @@ before_script:
 
   # Restart Apache
   - sudo service apache2 restart
+  
+  # CouchDB configuration
+  - curl -X PUT "http://localhost:5984/ocr"
+  - curl -X PUT "http://localhost:5984/ocr/_design/page" -H "Content-Type:application/json" -d@.travis/couchdb/page.json
+  - curl -X PUT "http://localhost:5984/ocr/_design/textDiff" -H "Content-Type:application/json" -d@.travis/couchdb/textDiff.json
 
 script:
   # - phpunit -c Tests/chrome.phpunit.xml --stderr
