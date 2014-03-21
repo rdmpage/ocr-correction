@@ -26,9 +26,5 @@ class IntegrationTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('OCR Correction', $title);
   }
 
-  public function testDummy() {
-    $this->assertEquals('test', 'test');
-  }
-
 }
 ?>
