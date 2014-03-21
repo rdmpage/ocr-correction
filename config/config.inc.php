@@ -1,5 +1,8 @@
 <?php
 
+//local instance for testing
+defined("HTTP_HOST") || define("HTTP_HOST", "http://www.ocr-correction.local/");
+
 // CouchDB database name
 defined("DB_NAME") || define("DB_NAME", "ocr");
 
