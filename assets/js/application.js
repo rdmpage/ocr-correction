@@ -112,7 +112,8 @@ var OCRCorrection = (function($) {
     },
 
     postEdit: function(ele) {
-      var after_text = $(ele).text(),
+      var self = this,
+          after_text = $(ele).text(),
           timestamp = this.getTime(), //10 digit timestamp for PHP
           history_item = {};
 
@@ -137,7 +138,7 @@ var OCRCorrection = (function($) {
           success: function(response) {
             if (response.names.length > 0) {
               $(ele).tooltipster({
-                content: _.template(this.vars.name_tooltip_template.html(), response.names[0].identifiedName),
+                content: $(_.template(self.vars.name_tooltip_template.html(), { name : response.names[0].identifiedName })),
                 interactive: true
               });
               $(ele).tooltipster('show');
