@@ -25,6 +25,38 @@ class IntegrationTest extends PHPUnit_Framework_TestCase {
     $title = $this->webDriver->getTitle();
     $this->assertEquals('OCR Correction', $title);
   }
+/*
+  public function testOriginalTextAppears() {
+    //TODO: how to get correct clipping?
+  }
+  
+  public function testAnonUserEditInScroller() {
+    
+  }
 
+  public function testLogIn() {
+    
+  }
+  
+  public function testEditIsPreserved() {
+    //TODO: have to do page refresh here
+  }
+  
+  public function testAuthenticatedUserEditInScroller() {
+    
+  }
+
+  public function testHighlightingCorrection() {
+    
+  }
+  
+  public function testScientificNameRecognized() {
+    
+  }
+  
+  public function testWordReplacements() {
+    //TODO: have to do page refresh here
+  }
+*/
 }
 ?>

@@ -23,7 +23,7 @@ class DjVuView extends DjVu {
       foreach ($region->paragraphs as $paragraph)
       {
 
-        $fontmetrics = new stdclass;
+        $fontmetrics = new stdClass;
 
         $count = 0;
         $last_baseline = 0;
@@ -42,11 +42,11 @@ class DjVuView extends DjVu {
           if (isset($line->fontmetrics->descender)) { $fontmetrics->descender[] = $line->fontmetrics->descender; }
         }
 
-        $paragraph->fontmetrics = new stdclass;
+        $paragraph->fontmetrics = new stdClass;
 
         if (isset($fontmetrics->linespacing))
         {
-          $paragraph->fontmetrics->linespacing = $this->mean($fontmetrics->linespacing);
+          $paragraph->fontmetrics->linespacing = parent::mean($fontmetrics->linespacing);
         }
         else
         {
@@ -54,15 +54,15 @@ class DjVuView extends DjVu {
         }
         if (isset($fontmetrics->ascender))
         {
-          $paragraph->fontmetrics->ascender = $this->mean($fontmetrics->ascender);
+          $paragraph->fontmetrics->ascender = parent::mean($fontmetrics->ascender);
         }
         if (isset($fontmetrics->capheight))
         {
-          $paragraph->fontmetrics->capheight = $this->mean($fontmetrics->capheight);
+          $paragraph->fontmetrics->capheight = parent::mean($fontmetrics->capheight);
         }
         if (isset($fontmetrics->descender))
         {
-          $paragraph->fontmetrics->descender = $this->mean($fontmetrics->descender);
+          $paragraph->fontmetrics->descender = parent::mean($fontmetrics->descender);
         }
 
       }
@@ -109,17 +109,6 @@ class DjVuView extends DjVu {
       }
     }
     return $this;
-  }
-
-  private function mean($a){
-    $average = 0;
-    $n = count($a);
-    $sum = 0;
-    foreach ($a as $x) {
-      $sum += $x;
-    }
-    $average = $sum/$n;
-    return $average;
   }
 
   public function createHTML() {

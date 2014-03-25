@@ -5,6 +5,32 @@ class DjVu {
   private $filename;
   public $page_structure;
 
+  public static function mean($a){
+    $average = 0;
+    $n = count($a);
+    $sum = 0;
+    foreach ($a as $x) {
+      $sum += $x;
+    }
+    $average = $sum/$n;
+    return $average;
+  }
+
+  public static function clean_xml($xml) {
+    $xml = str_replace("&#31;", "", $xml);
+    $xml = str_replace("&#11;", "", $xml);
+    return $xml;
+  }
+
+  public static function merge_coordinates($c1, $c2){
+    $coords = array();
+    $coords[0] = min($c1[0], $c2[0]); // min-x
+    $coords[1] = max($c1[1], $c2[1]); // max-y
+    $coords[2] = max($c1[2], $c2[2]); // max-x
+    $coords[3] = min($c1[3], $c2[3]); // min-y
+    return $coords;
+  }
+
   function __construct($filename) {
     $this->filename = $filename;
     $this->build_page_structure();
@@ -14,7 +40,7 @@ class DjVu {
     $xml = file_get_contents($this->filename);
 
     // Remove any spurious things which break XML parsers
-    $xml = $this->clean_xml($xml);
+    $xml = self::clean_xml($xml);
 
     $dom = new DOMDocument;
     $dom->loadXML($xml);
@@ -23,12 +49,12 @@ class DjVu {
     // Create page object from XML file to hold things such as bounding boxes
     $bbox = $this->page_bbox($xpath);
 
-    $this->page_structure = new stdclass;
+    $this->page_structure = new stdClass;
     $this->page_structure->regions = array();
     $this->page_structure->dpi = 0;
 
     // Get DPI
-    $nodes = $xpath->query ('//PARAM[@name="DPI"]/@value');
+    $nodes = $xpath->query('//PARAM[@name="DPI"]/@value');
     foreach($nodes as $node)
     {
       $this->page_structure->dpi = $node->firstChild->nodeValue;
@@ -36,12 +62,12 @@ class DjVu {
 
     // Get physical page bounding box
     $this->page_structure->bbox = array(0,0,0,0);
-    $nodes = $xpath->query ('//OBJECT/@width');
+    $nodes = $xpath->query('//OBJECT/@width');
     foreach($nodes as $node)
     {
       $this->page_structure->bbox[2] = $node->firstChild->nodeValue;
     }
-    $nodes = $xpath->query ('//OBJECT/@height');
+    $nodes = $xpath->query('//OBJECT/@height');
     foreach($nodes as $node)
     {
       $this->page_structure->bbox[1] = $node->firstChild->nodeValue;
@@ -50,10 +76,10 @@ class DjVu {
 
       //------------------------------------------------------------------------------------------
     // Regions, paragraphs, and lines on page
-    $regions = $xpath->query ('//REGION');    
+    $regions = $xpath->query('//REGION');
     foreach($regions as $region)
     {
-      $region_object = new stdclass;
+      $region_object = new stdClass;
 
       // Initialise region bounding box
       $region_object->bbox = array(10000,0,0,10000);
@@ -61,28 +87,27 @@ class DjVu {
       // Paragraphs
       $region_object->paragraphs = array();
 
-      $paragraphs = $xpath->query ('PARAGRAPH', $region);
+      $paragraphs = $xpath->query('PARAGRAPH', $region);
       foreach ($paragraphs as $paragraph)
       {
-        $paragraph_object = new stdclass;
+        $paragraph_object = new stdClass;
 
         // Initialise paragraph bounding box
         $paragraph_object->bbox = array(10000,0,0,10000);
 
-        // 
         $paragraph_object->line_heights = array();
 
         // Lines
         $paragraph_object->lines = array();
-        $lines = $xpath->query ('LINE', $paragraph);
+        $lines = $xpath->query('LINE', $paragraph);
         foreach ($lines as $line)
         {
-          $line_object = new stdclass;
+          $line_object = new stdClass;
           $line_object->text = '';
 
           // Add line bbox to paragraph bbox
           $line_object->bbox = $this->line_coordinates($xpath, $line, $line_object->text);
-          $paragraph_object->bbox = $this->merge_coordinates($paragraph_object->bbox, $line_object->bbox);
+          $paragraph_object->bbox = self::merge_coordinates($paragraph_object->bbox, $line_object->bbox);
 
           // Extract words
           $line_object->words = $this->extract_words($xpath, $line);
@@ -118,7 +143,7 @@ class DjVu {
 
           } 
 
-          $line_object->fontmetrics = new stdclass;
+          $line_object->fontmetrics = new stdClass;
 
           if ($line_object->baseline != $this->page_structure->bbox[1])
           {
@@ -146,21 +171,14 @@ class DjVu {
         }
 
         // Add paragraph bbox to region bbox
-        $region_object->bbox = $this->merge_coordinates($region_object->bbox, $paragraph_object->bbox);    
+        $region_object->bbox = self::merge_coordinates($region_object->bbox, $paragraph_object->bbox);    
 
         $region_object->paragraphs[] = $paragraph_object;
       }
 
       $this->page_structure->regions[] = $region_object;
     }
-
     return $this;
-  }
-
-  private function clean_xml($xml) {
-    $xml = str_replace("&#31;", "", $xml);
-    $xml = str_replace("&#11;", "", $xml);
-    return $xml;
   }
 
   private function page_bbox($xpath) {
@@ -201,20 +219,11 @@ class DjVu {
       $line_text .= $word->firstChild->nodeValue . ' ';
       $coords = explode(",", $attributes2['coords']);
 
-      $line_bbox = $this->merge_coordinates($line_bbox, $coords);
+      $line_bbox = self::merge_coordinates($line_bbox, $coords);
       $word_count++;
     }
 
     return $line_bbox;
-  }
-
-  private function merge_coordinates($c1, $c2){
-    $coords=array();
-    $coords[0] = min($c1[0], $c2[0]); // min-x
-    $coords[1] = max($c1[1], $c2[1]); // max-y
-    $coords[2] = max($c1[2], $c2[2]); // max-x
-    $coords[3] = min($c1[3], $c2[3]); // min-y
-    return $coords;
   }
 
   private function extract_words($xpath, $node){
@@ -223,7 +232,7 @@ class DjVu {
 
     $word_list = array();
 
-    $words = $xpath->query ('WORD', $node);
+    $words = $xpath->query('WORD', $node);
     foreach($words as $word)
     {
       // coordinates
@@ -240,7 +249,7 @@ class DjVu {
 
       $coords = explode(",", $attributes2['coords']);
 
-      $w = new stdclass;
+      $w = new stdClass;
       $w->text = $word->firstChild->nodeValue;
       $w->bbox = $coords;
 

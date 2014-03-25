@@ -22,6 +22,12 @@ class DjVuViewTest extends PHPUnit_Framework_TestCase {
            ->addLines();
    }
 
+   public function test_addition_of_fontmetrics() {
+     $fontmetrics = (array)$this->djvu->page_structure->regions[0]->paragraphs[0]->lines[0]->fontmetrics;
+     $expected = array('baseline' => 134, 'ascender' => 40, 'capheight' => 39, 'descender' => 16);
+     $this->assertEquals($fontmetrics, $expected);
+   }
+
     public function test_regions_size() {
       $this->assertEquals(count($this->djvu->page_structure->regions), 2);
     }
@@ -31,3 +37,5 @@ class DjVuViewTest extends PHPUnit_Framework_TestCase {
     }
 
 }
+
+?>
