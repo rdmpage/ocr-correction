@@ -12,7 +12,7 @@ $endkey = array((int)$PageID,"{}");
 
 $directory = $argv[2];
 
-$couch = new CouchSimple(DB_NAME, DB_HOST, DB_PORT, DB_USER, DB_PASS, true);
+$couch = new CouchSimple(DB_PROTOCOL, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS);
 $url = 'all?startkey=' . urlencode(json_encode($startkey)) . '&endkey=' . str_replace("%22","",urlencode(json_encode($endkey)));
 $all = $couch->getView('page', $url);
 

@@ -8,7 +8,7 @@ if(!isset($argv[1])) { exit(); }
 
 $directory = $argv[1];
 
-$couch = new CouchSimple(DB_NAME, DB_HOST, DB_PORT, DB_USER, DB_PASS, true);
+$couch = new CouchSimple(DB_PROTOCOL, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS);
 
 $dir_iterator = new RecursiveDirectoryIterator($directory); 
 foreach(new RecursiveIteratorIterator($dir_iterator) as $file =>$key) {

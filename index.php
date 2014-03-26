@@ -4,7 +4,7 @@ require_once(dirname(__FILE__) . '/lib/djvu.view.class.php');
 
 $PageID = 16002437;
 $PageWidth = 800;
-$CouchDB = "http://" . DB_HOST . ":" . DB_PORT . "/" . DB_NAME;
+$CouchDB = DB_PROTOCOL . "://" . DB_HOST . ":" . DB_PORT . "/" . DB_NAME;
 
 $xml_filename = 'examples/' . $PageID . '.xml';
 $image_filename = 'examples/' . $PageID . '.png';
@@ -42,8 +42,8 @@ $html = $djvu->createHTML();
 <script>
 $(function() {
   OCRCorrection.initialize({
-    pouch_db : "ocr",
-    couch_db : "<?php echo $CouchDB; ?>",
+    db : "ocr",
+    remote_db : "<?php echo $CouchDB; ?>",
     page_id : <?php echo $PageID; ?>,
     show_replacements : false,
     show_word_replacements : true
@@ -99,7 +99,7 @@ $(function() {
 </script>
 
 <script type="text/template" id="name_tooltip_template">
-  <span>Name found in edited text: <%=name%></span>
+  <span>Name found in edited text: <%=names%></span>
 </script>
 
 <script type="text/template" id="word_replacement_template">

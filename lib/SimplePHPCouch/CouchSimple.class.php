@@ -10,6 +10,7 @@ require_once 'CouchResponse.class.php';
 class CouchSimple
 {
     private $db;
+    private $protocol;
     private $host;
     private $port;
     private $username;
@@ -17,11 +18,12 @@ class CouchSimple
 
     private static $okStatus = array(412);
 
-    public function __construct($db, $host, $port = 5984, $username = null, $password = null, $autoCreate=false)
+    public function __construct($protocol = "http", $host, $port = 5984, $db, $username = null, $password = null, $autoCreate=false)
     {
-        $this->db = $db;
+        $this->protocol = $protocol;
         $this->host = $host;
         $this->port = $port;
+        $this->db = $db;
         $this->username = $username;
         $this->password = $password;
 
@@ -32,7 +34,7 @@ class CouchSimple
 
     private function talkToDB($url, $method = CouchRequest::COUCH_GET, $data = null)
     {
-        $fullURL = "http://".$this->host.":".$this->port."/".$this->db.$url;
+        $fullURL = $this->protocol . "://".$this->host.":".$this->port."/".$this->db.$url;
 
         $request = new CouchRequest($fullURL, $method, $data, $this->username, $this->password);
         $resp = $request->send();

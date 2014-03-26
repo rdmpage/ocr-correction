@@ -11,7 +11,7 @@ $PageID = $_REQUEST['pageId'];
 $startkey = array((int)$PageID);
 $endkey = array((int)$PageID,time());
 
-$couch = new CouchSimple(DB_NAME, DB_HOST, DB_PORT, DB_USER, DB_PASS, true);
+$couch = new CouchSimple(DB_PROTOCOL, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS);
 $edits = $couch->getView('page', 'edits?startkey=' . urlencode(json_encode($startkey)) . '&endkey=' .  urlencode(json_encode($endkey)));
 
 header('Content-Type: application/json');

@@ -8,10 +8,10 @@
 
 class CouchRequest
 {
-	const COUCH_GET = 'GET';
-	const COUCH_DELETE = 'DELETE';
-	const COUCH_POST = 'POST';
-	const COUCH_PUT = 'PUT';
+    const COUCH_GET = 'GET';
+    const COUCH_DELETE = 'DELETE';
+    const COUCH_POST = 'POST';
+    const COUCH_PUT = 'PUT';
 
     private $url = "";
     private $method = CouchRequest::COUCH_GET;

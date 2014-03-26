@@ -9,13 +9,14 @@ var OCRCorrection = (function($) {
       edits_url : './edit.php?pageId=',
       diffs_url : './textreplacement.php',
       page_id : 0,
-      couch_db: "",
-      pouch_db: "ocr",
+      db: "ocr",
+      remote_db: "",
       show_replacements: false,
       show_word_replacements: false
     },
 
     vars: {
+      pouch_db : {},
       ocr_img_container : {},
       ocr_img : {},
       edit_history: {},
@@ -23,7 +24,6 @@ var OCRCorrection = (function($) {
       name_tooltip_template: {},
       word_replacement_template: {},
       before_text : "",
-      pouch: {},
       user: {
         userAvatar : "",
         userName : "",
@@ -51,8 +51,7 @@ var OCRCorrection = (function($) {
       this.vars.word_replacement_template = $('#word_replacement_template');
       this.vars.ocr_img_container = $('#ocr_image_container');
       this.vars.ocr_img = $("#ocr_image");
-      this.vars.pouch = new PouchDB(this.settings.couch_db);
-      //WIP this.vars.pouch = new PouchDB(this.settings.pouch_db);
+      this.vars.pouch_db = new PouchDB(this.settings.db);
     },
 
     setFontSize: function() {
@@ -123,7 +122,7 @@ var OCRCorrection = (function($) {
           url = "";
 
       if (after_text !== this.vars.before_text){
-        this.vars.pouch.post({
+        this.vars.pouch_db.post({
           type: "edit",
           time: timestamp,
           pageId: this.settings.page_id,
@@ -135,7 +134,6 @@ var OCRCorrection = (function($) {
           userUrl: this.vars.user.userUrl
         });
 
-        //any names found in edited text?
         url = this.vars.gnrd_resource + "?text=" + encodeURIComponent(after_text);
         this.findNames(ele, url);
 
@@ -161,8 +159,8 @@ var OCRCorrection = (function($) {
     },
 
     findNames: function(ele, url) {
-      var self = this;
-      
+      var self = this, names = "";
+
       $.ajax({
         type: "GET",
         url: url,
@@ -173,8 +171,9 @@ var OCRCorrection = (function($) {
             self.findNames(ele, response.token_url);
           } else if(response.status === 200) {
             if(response.names.length > 0) {
+              names = $.map(response.names, function(i) { return i.identifiedName; });
               $(ele).tooltipster({
-                content: $(_.template(self.vars.name_tooltip_template.html(), { name : response.names[0].identifiedName })),
+                content: $(_.template(self.vars.name_tooltip_template.html(), { names : names.join(", ") })),
                 interactive: true
               });
               $(ele).tooltipster('show');
@@ -185,9 +184,8 @@ var OCRCorrection = (function($) {
     },
 
     synchronize: function() {
-      if(this.settings.couch_db.indexOf("http://") !== -1) {
-        //WIP: do we really want to synchronize the entire db?
-        this.vars.pouch.replicate.sync(this.settings.couch_db, { continuous : true });
+      if(this.settings.remote_db) {
+        this.vars.pouch_db.replicate.to(this.settings.remote_db);
       }
     },
 
@@ -198,13 +196,13 @@ WIP: offline retrieval from PouchDB
       var fun = { map : function map(doc) { emit([doc.pageId, doc.time], doc); }, reduce:false },
           options = { startkey : [this.settings.page_id], endkey : [this.settings.page_id, this.getTime()] };
 
-      this.vars.pouch.query(fun, options, function(err, response) {
+      this.vars.pouch_db.query(fun, options, function(err, response) {
         $.each(response.rows, function() {
           $("#line" + this.value.lineId).html(this.value.text).addClass("ocr_edited");
         });
       });
 */
-      if(this.settings.couch_db) {
+      if(this.settings.remote_db) {
         $.ajax({
           type: "GET",
           url: this.settings.edits_url + this.settings.page_id,
@@ -223,7 +221,7 @@ WIP: offline retrieval from PouchDB
     getTextReplacements: function() {
       var lines = $('.ocr_line');
 
-      if(this.settings.couch_db) {
+      if(this.settings.remote_db) {
         $.ajax({
           type: "GET",
           url: this.settings.diffs_url,
@@ -270,7 +268,7 @@ WIP: offline retrieval from PouchDB
 
         return left.substr(leftPos) + right.substr(0, rightPos);
       }
-    
+
       function findNextNonHtmlText(str, text, pos) {
         var htmlPos = str.indexOf("<", pos);
         var nextPos = str.indexOf(text, pos);
@@ -291,7 +289,7 @@ WIP: offline retrieval from PouchDB
         return nextPos;
       }
 
-      if(this.settings.couch_db) {
+      if(this.settings.remote_db) {
         var lines = $('.ocr_line');
 
         $.ajax({
