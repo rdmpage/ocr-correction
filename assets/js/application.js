@@ -1,4 +1,4 @@
-/*global jQuery, window, document, self, alert, PouchDB, _, OAuth */
+/*global jQuery, window, document, self, alert, PouchDB, _, OAuth, console */
 var OCRCorrection = (function($) {
 
   "use strict";
@@ -137,7 +137,7 @@ var OCRCorrection = (function($) {
         });
 
         url = this.vars.gnrd_resource + "?text=" + encodeURIComponent(after_text);
-        this.findNames(ele, url);
+        this.findNames($(ele), url, 0);
 
         this.setUserDefaults(this.vars.user);
         history_item = $.extend({},this.vars.user,{ text : after_text });
@@ -151,26 +151,29 @@ var OCRCorrection = (function($) {
       return parseInt(String(new Date().getTime()).substring(0,10), 10);
     },
 
-    findNames: function(ele, url) {
+    findNames: function(ele, url, counter) {
       var self = this, names = "";
+
+      ele.data("name-counter", counter);
 
       $.ajax({
         type: "GET",
         url: url,
         dataType: 'json',
         success: function(response) {
-          if (response.status === 303) {
+          if (response.status === 303 && ele.data("name-counter") < 10) {
             window.setTimeout(function() {
-              self.findNames(ele, response.token_url);
+              ele.data("name-counter", counter += 1);
+              self.findNames(ele, response.token_url, counter);
             }, 2000);
           } else if(response.status === 200) {
             if(response.names.length > 0) {
               names = $.map(response.names, function(i) { return i.identifiedName; });
-              $(ele).tooltipster({
+              ele.tooltipster({
                 content: $(_.template(self.vars.name_tooltip_template.html(), { names : names.join(", ") })),
                 interactive: true
               });
-              $(ele).tooltipster('show');
+              ele.tooltipster('show');
             }
           }
         }
