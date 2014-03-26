@@ -151,15 +151,6 @@ var OCRCorrection = (function($) {
       return parseInt(String(new Date().getTime()).substring(0,10), 10);
     },
 
-    sleep: function(milliseconds) {
-      var start = new Date().getTime(), i;
-      for (i = 0; i < 1e7; i += 1) {
-        if ((new Date().getTime() - start) > milliseconds){
-          break;
-        }
-      }
-    },
-
     findNames: function(ele, url) {
       var self = this, names = "";
 
@@ -169,8 +160,9 @@ var OCRCorrection = (function($) {
         dataType: 'json',
         success: function(response) {
           if (response.status === 303) {
-            self.sleep(2000);
-            self.findNames(ele, response.token_url);
+            window.setTimeout(function() {
+              self.findNames(ele, response.token_url);
+            }, 2000);
           } else if(response.status === 200) {
             if(response.names.length > 0) {
               names = $.map(response.names, function(i) { return i.identifiedName; });
