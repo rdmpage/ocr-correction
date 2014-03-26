@@ -132,6 +132,8 @@ var OCRCorrection = (function($) {
           userName : this.vars.user.userName,
           userAvatar: this.vars.user.userAvatar,
           userUrl: this.vars.user.userUrl
+        }, function(err, response) {
+          if(err) { console.log(err); }
         });
 
         url = this.vars.gnrd_resource + "?text=" + encodeURIComponent(after_text);

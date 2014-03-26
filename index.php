@@ -2,15 +2,21 @@
 require_once(dirname(__FILE__) . '/config/config.inc.php');
 require_once(dirname(__FILE__) . '/lib/djvu.view.class.php');
 
-$PageID = 16002437;
-$PageWidth = 800;
-$CouchDB = DB_PROTOCOL . "://" . DB_HOST . ":" . DB_PORT . "/" . DB_NAME;
+//TODO: $remote_db is used as either remote CouchDB (works as localhost) or Cloudant (no worky!) to sync from PouchDB
+$remote_db = DB_PROTOCOL . "://" . DB_HOST . ":" . DB_PORT . "/" . DB_NAME;
 
-$xml_filename = 'examples/' . $PageID . '.xml';
-$image_filename = 'examples/' . $PageID . '.png';
+$page_width = 800;
+
+/**************************************************
+  CANNED DATA THAT COULD BE PULLED FROM ELSEWHWERE
+**************************************************/
+$page_id = 16002437;
+$xml_filename = 'examples/' . $page_id . '.xml';
+$image_filename = 'examples/' . $page_id . '.png';
+/*************************************************/
 
 $djvu = new DjVuView($xml_filename);
-$djvu->setImageWidth($PageWidth)
+$djvu->setImageWidth($page_width)
      ->setImageURL($image_filename)
      ->addFontmetrics()
      ->addLines();
@@ -42,9 +48,9 @@ $html = $djvu->createHTML();
 <script>
 $(function() {
   OCRCorrection.initialize({
-    db : "ocr",
-    remote_db : "<?php echo $CouchDB; ?>",
-    page_id : <?php echo $PageID; ?>,
+    db : "<?php echo DB_NAME; ?>",
+    remote_db : "<?php echo $remote_db; ?>",
+    page_id : <?php echo $page_id; ?>,
     show_replacements : false,
     show_word_replacements : true
   });
