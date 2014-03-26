@@ -29,6 +29,10 @@ Then restart CouchDB.
 
 See [CORS quickstart](https://gist.github.com/chewbranca/0f690f8c2bfad37a712a)
 
+## Configuration
+
+Rename /config/config.inc.php.sample to /config/config.inc.php and adjust as necessary
+
 ### Create database and views
 
 Create a CouchDB database called "ocr"

@@ -90,10 +90,10 @@ $(function() {
 
 <script type="text/template" id="ocr_history_template">
 <div class="ocr_edit_item media">
-  <a href="#" class="pull-left" href="<%=userUrl %>"><img src = "<%=userAvatar %>" class="media-object" width="48" alt="<%=userName %>" /></a>
+  <a href="#" class="pull-left" href="<%=userUrl%>"><img src = "<%=userAvatar%>" class="media-object" width="48" alt="<%=userName%>" /></a>
   <div class="media-body">
-    <h4 class="media-heading"><%=userName %></h4>
-    <%=text %>
+    <h4 class="media-heading"><%=userName%></h4>
+    <%=text%>
   </div>
 </div>
 </script>
@@ -103,7 +103,7 @@ $(function() {
 </script>
 
 <script type="text/template" id="word_replacement_template">
-  <span title="Replace <%= key %> with <%=value %>" style="background-color:lavender"><%= word %></span>
+  <span title="Replace <%= key %> with <%=value%>" style="background-color:lavender"><%=word%></span>
 </script>
 
 </body>

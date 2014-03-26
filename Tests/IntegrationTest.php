@@ -25,6 +25,7 @@ class IntegrationTest extends PHPUnit_Framework_TestCase {
     $title = $this->webDriver->getTitle();
     $this->assertEquals('OCR Correction', $title);
   }
+
 /*
   public function testOriginalTextAppears() {
     //TODO: how to get correct clipping?

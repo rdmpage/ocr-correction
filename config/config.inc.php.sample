@@ -1,6 +1,6 @@
 <?php
 
-//local instance for testing
+//local app for testing
 defined("HTTP_HOST") || define("HTTP_HOST", "http://www.ocr-correction.local/");
 
 // CouchDB database name
@@ -22,7 +22,7 @@ defined("DB_USER") || define("DB_USER", null);
 defined("DB_PASS") || define("DB_PASS", null);
 
 //OAuth Public Key
-defined("OAUTH_KEY") || define("OAUTH_KEY", "qyCCu_d0NUGs8SMK9dM1Lzt_wq8");
+defined("OAUTH_KEY") || define("OAUTH_KEY", "");
 
 date_default_timezone_set('UTC');
 
