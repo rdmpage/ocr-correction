@@ -54,7 +54,7 @@ $(function() {
     show_replacements : false,
     show_word_replacements : true
   });
-  OAuth.initialize('<?php echo OAUTH_KEY; ?>');
+  OAuth.initialize("<?php echo OAUTH_KEY; ?>");
 });
 </script>
 </head>
@@ -67,7 +67,7 @@ $(function() {
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </a>
-        <a class="brand" href=".">OCR</a>
+        <a class="brand" href=".">OCR Correction of BHL Documents (DEMO)</a>
         <div class="nav-collapse pull-right">
           <?php if(!isset($_COOKIE["ocr_correction"])): ?>
             <button id="ocr_signin" class="btn btn-primary">Sign In</button>
