@@ -163,7 +163,8 @@ var OCRCorrection = (function($) {
         success: function(response) {
           if (response.status === 303 && ele.data("name-counter") < 10) {
             window.setTimeout(function() {
-              ele.data("name-counter", counter += 1);
+              counter += 1;
+              ele.data("name-counter", counter);
               self.findNames(ele, response.token_url, counter);
             }, 2000);
           } else if(response.status === 200) {
