@@ -138,9 +138,9 @@ function(doc) {
 }
 ```
 
-## URLs for page image and XML
+## URLs for page image and DjVu XML
 
-You can fetch page images and XML from BioStor.
+You can fetch page images and DjVu XML from BioStor.
 
 http://biostor.org/bhl_page_xml.php?PageID=34570741
 http://biostor.org/bhl_page_bw_image.php?PageID=34570741
