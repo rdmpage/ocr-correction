@@ -262,56 +262,53 @@ WIP: offline retrieval from PouchDB
       }
     },
 
+    getWordAt: function(str, pos) {
+      var left = str.substr(0, pos),
+          right = str.substr(pos),
+          letters = /^[0-9a-zA-Z]+$/,
+          leftPos = 0, rightPos = 0;
+
+      if (left.length > 0) {
+        leftPos = left.length - 1;
+        while (left.substr(leftPos,1).match(letters) && leftPos > 0) {
+          leftPos -= 1;
+        }
+        if (!left.substr(leftPos,1).match(letters)) { leftPos += 1; }
+      }
+
+      if (right.length > 0) {
+        rightPos = 0;
+        while (right.substr(rightPos,1).match(letters) && rightPos < right.length - 1) {
+          rightPos += 1;
+        }
+        if (right.substr(rightPos,1).match(letters)) { rightPos += 1; }
+      }
+
+      return left.substr(leftPos) + right.substr(0, rightPos);
+    },
+
+    findNextNonHtmlText: function(str, text, pos) {
+      var htmlPos = str.indexOf("<", pos),
+          nextPos = str.indexOf(text, pos);
+
+      if (htmlPos !== -1 && nextPos > htmlPos) {
+        var inHtml = true, endPos;
+        while(inHtml) {
+          endPos = str.indexOf(">", htmlPos);
+          htmlPos = str.indexOf("<", endPos);
+          nextPos = str.indexOf(text, endPos);
+
+          if (htmlPos === -1 || nextPos < htmlPos || nextPos === -1) {
+            inHtml = false;
+          }
+        }
+      }
+
+      return nextPos;
+    },
+
     getWordReplacements: function() {
       var self = this;
-
-      function getWordAt(str, pos) {
-        var left = str.substr(0, pos);
-        var right = str.substr(pos);
-        var letters = /^[0-9a-zA-Z]+$/;  
-
-        //find left end
-        var leftPos = 0;
-        if (left.length > 0) {
-          leftPos = left.length - 1;
-          while (left.substr(leftPos,1).match(letters) && leftPos > 0) {
-            leftPos -= 1;
-          }
-          if (!left.substr(leftPos,1).match(letters)) { leftPos += 1; }
-        }
-
-        //find right end
-        var rightPos = 0;
-        if (right.length > 0) {
-          rightPos = 0;
-          while (right.substr(rightPos,1).match(letters) && rightPos < right.length - 1) {
-            rightPos += 1;
-          }
-          if (right.substr(rightPos,1).match(letters)) { rightPos += 1; }
-        }
-
-        return left.substr(leftPos) + right.substr(0, rightPos);
-      }
-
-      function findNextNonHtmlText(str, text, pos) {
-        var htmlPos = str.indexOf("<", pos);
-        var nextPos = str.indexOf(text, pos);
-
-        if (htmlPos !== -1 && nextPos > htmlPos) {
-          var inHtml = true, endPos;
-          while(inHtml) {
-            endPos = str.indexOf(">", htmlPos);
-            htmlPos = str.indexOf("<", endPos);
-            nextPos = str.indexOf(text, endPos);
-
-            if (htmlPos === -1 || nextPos < htmlPos || nextPos === -1) {
-              inHtml = false;
-            }
-          }
-        }
-
-        return nextPos;
-      }
 
       if(this.settings.remote_db) {
         var lines = $('.ocr_line');
@@ -327,21 +324,21 @@ WIP: offline retrieval from PouchDB
 
               $.each(response.rows, function() {
                 if (this.key.length > 1) { //not sure we care about single char changes
-                  var pos = findNextNonHtmlText(newText, this.key, 0),
+                  var pos = self.findNextNonHtmlText(newText, this.key, 0),
                       word = "", startPos;
 
-                  while (pos !== -1) { 
-                    word = getWordAt(newText, pos);
+                  while (pos !== -1) {
+                    word = self.getWordAt(newText, pos);
 
                     //work out word start pos :-/
                     startPos = pos - word.indexOf(this.key);
                     newText = newText.slice(0, startPos) + 
                     _.template(self.vars.word_replacement_template.html(), { key : this.key, value : this.value, word : word })
                     + newText.slice(startPos + word.length);
-                                    
+
                     //move to last replacement
                     pos = newText.lastIndexOf("</span>") + 7;
-                    pos = findNextNonHtmlText(newText, this.key, pos);              
+                    pos = self.findNextNonHtmlText(newText, this.key, pos);
                   }
                 }
               });
