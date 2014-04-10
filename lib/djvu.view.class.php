@@ -125,7 +125,7 @@ class DjVuView extends DjVu {
 
         // text
         foreach ($paragraph->lines as $line){
-          $ocr_line = new stdclass;
+          $ocr_line = new stdClass;
           $ocr_line->id = $line_counter++;
           $ocr_line->fontsize = $fontsize;
           $ocr_line->bbox = $line->bbox;

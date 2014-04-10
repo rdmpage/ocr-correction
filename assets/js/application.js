@@ -38,7 +38,8 @@ var OCRCorrection = (function($) {
       db: "ocr",
       remote_db: "",
       show_replacements: false,
-      show_word_replacements: false
+      show_word_replacements: false,
+      oauth_provider: "google_plus"
     },
 
     vars: {
@@ -50,12 +51,12 @@ var OCRCorrection = (function($) {
       name_tooltip_template: {},
       word_replacement_template: {},
       before_text : "",
-      user: {
-        userAvatar : "",
-        userName : "",
-        userUrl : ""
-      },
-      gnrd_resource : "http://gnrd.globalnames.org/name_finder.json"
+      user: { userAvatar : "", userName : "", userUrl : "" },
+      gnrd_resource : "http://gnrd.globalnames.org/name_finder.json",
+      oauth_profile_url : {
+        google_plus : "/plus/v1/people/me",
+        github : "user"
+      }
     },
 
     initialize: function() {
@@ -142,7 +143,8 @@ var OCRCorrection = (function($) {
     },
 
     postEdit: function(ele) {
-      var after_text = $(ele).text(),
+      var self = this,
+          after_text = $(ele).text(),
           timestamp = this.getTime(), //10 digit timestamp for PHP
           history_item = {},
           url = "";
@@ -160,6 +162,7 @@ var OCRCorrection = (function($) {
           userUrl: this.vars.user.userUrl
         }, function(err, response) {
           if(err) { console.log(err); }
+          self.unusedVariables(response);
         });
 
         url = this.vars.gnrd_resource + "?text=" + encodeURIComponent(after_text);
@@ -289,10 +292,10 @@ WIP: offline retrieval from PouchDB
 
     findNextNonHtmlText: function(str, text, pos) {
       var htmlPos = str.indexOf("<", pos),
-          nextPos = str.indexOf(text, pos);
+          nextPos = str.indexOf(text, pos),
+          inHtml = true, endPos;
 
       if (htmlPos !== -1 && nextPos > htmlPos) {
-        var inHtml = true, endPos;
         while(inHtml) {
           endPos = str.indexOf(">", htmlPos);
           htmlPos = str.indexOf("<", endPos);
@@ -308,10 +311,10 @@ WIP: offline retrieval from PouchDB
     },
 
     getWordReplacements: function() {
-      var self = this;
+      var self = this,
+          lines = $('.ocr_line');
 
       if(this.settings.remote_db) {
-        var lines = $('.ocr_line');
 
         $.ajax({
           type: "GET",
@@ -350,13 +353,36 @@ WIP: offline retrieval from PouchDB
       }
     },
 
+    setUser: function(res) {
+      switch(this.settings.oauth_provider) {
+        case "github":
+          this.vars.user = {
+            userName : res.name,
+            userAvatar : res.avatar_url,
+            userUrl : res.html_url
+          };
+        break;
+
+        case "google_plus":
+          this.vars.user = {
+            userName : res.displayName,
+            userAvatar : res.image.url,
+            userUrl : res.url
+          };
+        break;
+      }
+    },
+
     bindAuthentication: function() {
+      var self = this;
+
       $('#ocr_signin').on("click", function(e) {
         e.preventDefault();
-        OAuth.popup("github", function(error, result) {
+        OAuth.popup(self.settings.oauth_provider, function(error, result) {
           if (error) { return; }
-          result.get("user").done(function(res) {
-            $.cookie('ocr_correction', { userAvatar : res.avatar_url, userName : res.name, userUrl : res.url }, { expires: 7 });
+          result.get(self.vars.oauth_profile_url[self.settings.oauth_provider]).done(function(res) {
+            self.setUser(res);
+            $.cookie('ocr_correction', self.vars.user, { expires: 7 });
             window.location.reload(true);
           });
         });
@@ -366,6 +392,10 @@ WIP: offline retrieval from PouchDB
         $.removeCookie('ocr_correction');
         window.location.reload(true);
       });
+    },
+
+    unusedVariables: function() {
+      return;
     }
 
   };

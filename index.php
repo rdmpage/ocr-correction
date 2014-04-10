@@ -79,7 +79,8 @@ $(function() {
     remote_db : "<?php echo $remote_db; ?>",
     page_id : <?php echo $page_id; ?>,
     show_replacements : false,
-    show_word_replacements : true
+    show_word_replacements : true,
+    oauth_provider : "github"
   });
   OAuth.initialize("<?php echo OAUTH_KEY; ?>");
 });
