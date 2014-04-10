@@ -4,6 +4,16 @@ body {
    background-color: #E9E9E9;
 }
 
+.btn-primary, .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+  background-repeat:no-repeat;
+  background-position:0px 0px;
+  padding-left:40px;
+}
+
+.btn-google_plus { background-image:url("../img/logo-google-plus.png"); }
+.btn-github { background-image:url("../img/logo-github.png"); }
+.btn-twitter { background-image:url("../img/logo-twitter.png"); }
+
 #ocr_content {
   position:relative;
   width: 800px;

@@ -80,7 +80,8 @@ $(function() {
     page_id : <?php echo $page_id; ?>,
     show_replacements : false,
     show_word_replacements : true,
-    oauth_provider : "github"
+    allow_anonymous : true,
+    oauth_provider : "<?php echo OAUTH_PROVIDER; ?>"
   });
   OAuth.initialize("<?php echo OAUTH_KEY; ?>");
 });
@@ -98,7 +99,7 @@ $(function() {
         <a class="brand" href=".">OCR Correction of BHL Documents (DEMO)</a>
         <div class="nav-collapse pull-right">
           <?php if(!isset($_COOKIE["ocr_correction"])): ?>
-            <button id="ocr_signin" class="btn btn-primary">Sign In</button>
+            <button id="ocr_signin" class="btn btn-primary btn-<?php echo OAUTH_PROVIDER; ?>">Sign In</button>
           <?php else: ?>
             <button id="ocr_signout" class="btn btn-danger">Sign Out</button>
           <?php endif; ?>
@@ -124,7 +125,7 @@ $(function() {
 
 <script type="text/template" id="ocr_history_template">
 <div class="ocr_edit_item media">
-  <a href="#" class="pull-left" href="<%=userUrl%>"><img src = "<%=userAvatar%>" class="media-object" width="48" alt="<%=userName%>" /></a>
+  <a href="<%=userUrl%>" class="pull-left" target="_blank"><img src = "<%=userAvatar%>" class="media-object" width="48" alt="<%=userName%>" /></a>
   <div class="media-body">
     <h4 class="media-heading"><%=userName%></h4>
     <%=text%>

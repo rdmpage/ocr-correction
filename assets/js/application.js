@@ -39,6 +39,7 @@ var OCRCorrection = (function($) {
       remote_db: "",
       show_replacements: false,
       show_word_replacements: false,
+      allow_anonymous : false,
       oauth_provider: "google_plus"
     },
 
@@ -55,7 +56,8 @@ var OCRCorrection = (function($) {
       gnrd_resource : "http://gnrd.globalnames.org/name_finder.json",
       oauth_profile_url : {
         google_plus : "/plus/v1/people/me",
-        github : "user"
+        github : "user",
+        twitter : "/1.1/account/verify_credentials.json"
       }
     },
 
@@ -63,8 +65,8 @@ var OCRCorrection = (function($) {
       $.cookie.json = true;
       this.setVariables();
       this.setFontSize();
-      this.bindActions();
       this.loadUser();
+      this.bindActions();
       this.getEdits();
       if (this.settings.show_replacements) { this.getTextReplacements(); }
       if (this.settings.show_word_replacements) { this.getWordReplacements(); }
@@ -93,22 +95,34 @@ var OCRCorrection = (function($) {
     },
 
     bindActions: function() {
-      var self = this;
+      var self = this,
+          lines = $('.ocr_page').find('.ocr_line');
 
-      $('.ocr_page').find('.ocr_line')
-                    .on('focus', function() {
-                      self.vars.before_text = $(this).text();
-                      self.showPopUp(this); })
-                    .on('blur', function() {
-                      self.closePopUp();
-                      self.postEdit(this); })
-                    .on('keypress', function(e) {
-                      var code = e.keyCode || e.which;
-                      if(code === 13) {
-                        e.preventDefault();
-                        $(this).next().focus();
-                      }
-                    });
+      if(this.settings.allow_anonymous || this.activeUser()) {
+        lines.on('focus', function() {
+          self.vars.before_text = $(this).text();
+          self.showPopUp(this); })
+        .on('blur', function() {
+          self.closePopUp();
+          self.postEdit(this); })
+        .on('keypress', function(e) {
+          var code = e.keyCode || e.which;
+          if(code === 13) {
+            e.preventDefault();
+            $(this).next().focus();
+          }
+        });
+      } else {
+        lines.prop("contenteditable", false);
+      }
+    },
+
+    activeUser: function() {
+      if(this.vars.user.userName) {
+        return true;
+      } else {
+        return false;
+      }
     },
 
     loadUser: function() {
@@ -368,6 +382,14 @@ WIP: offline retrieval from PouchDB
             userName : res.displayName,
             userAvatar : res.image.url,
             userUrl : res.url
+          };
+        break;
+
+        case "twitter":
+          this.vars.user = {
+            userName : res.name,
+            userAvatar : res.profile_image_url,
+            userUrl : "https://twitter.com/" + res.screen_name
           };
         break;
       }
