@@ -129,8 +129,7 @@ for(var i = 0; i < diff.length - 1; i++)
 }
 }
 ```
-
-Create a view to query a page for original lines and all edits
+Create view page/all to query a page for original lines and all edits:
 
 ```javascript
 function(doc) {
