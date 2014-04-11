@@ -45,20 +45,16 @@ class DjVuView extends DjVu {
 
   public function addFontmetrics() {
     // Compute font sizes
-    foreach ($this->page_structure->regions as $region)
-    {
-      foreach ($region->paragraphs as $paragraph)
-      {
 
+    foreach ($this->page_structure->regions as $region) {
+      foreach ($region->paragraphs as $paragraph) {
         $fontmetrics = new stdClass;
 
         $count = 0;
         $last_baseline = 0;
-        foreach ($paragraph->lines as $line)
-        {
+        foreach ($paragraph->lines as $line) {
 
-          if ($count > 0 && isset($line->fontmetrics->baseline))
-          {
+          if ($count > 0 && isset($line->fontmetrics->baseline)) {
             $fontmetrics->linespacing[] = $line->fontmetrics->baseline - $last_baseline;
           }
           $count++;
@@ -71,24 +67,18 @@ class DjVuView extends DjVu {
 
         $paragraph->fontmetrics = new stdClass;
 
-        if (isset($fontmetrics->linespacing))
-        {
+        if (isset($fontmetrics->linespacing)) {
           $paragraph->fontmetrics->linespacing = parent::mean($fontmetrics->linespacing);
-        }
-        else
-        {
+        } else {
           $paragraph->fontmetrics->linespacing = -1;
         }
-        if (isset($fontmetrics->ascender))
-        {
+        if (isset($fontmetrics->ascender)) {
           $paragraph->fontmetrics->ascender = parent::mean($fontmetrics->ascender);
         }
-        if (isset($fontmetrics->capheight))
-        {
+        if (isset($fontmetrics->capheight)) {
           $paragraph->fontmetrics->capheight = parent::mean($fontmetrics->capheight);
         }
-        if (isset($fontmetrics->descender))
-        {
+        if (isset($fontmetrics->descender)) {
           $paragraph->fontmetrics->descender = parent::mean($fontmetrics->descender);
         }
 
@@ -110,21 +100,19 @@ class DjVuView extends DjVu {
 
         // Compute font height based on capheight of font
         // e.g for Times New Roman we divide by 0.662
-        if (isset($paragraph->fontmetrics->capheight))
-        {
+        if (isset($paragraph->fontmetrics->capheight)) {
           $fontsize = $paragraph->fontmetrics->capheight/0.662;
         }
 
         $linespacing = $paragraph->fontmetrics->linespacing;
-        if ($linespacing != -1)
-        {
+        if ($linespacing != -1) {
           $linespacing = round($linespacing/$this->page_structure->dpi * 72);
         }
 
         $fontsize *= $scale;
 
         // text
-        foreach ($paragraph->lines as $line){
+        foreach ($paragraph->lines as $line) {
           $ocr_line = new stdClass;
           $ocr_line->id = $line_counter++;
           $ocr_line->fontsize = $fontsize;
