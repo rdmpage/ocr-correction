@@ -34,7 +34,7 @@ $page_width = 800;
 /**************************************************
   CANNED DATA THAT COULD BE PULLED FROM ELSEWHWERE
 **************************************************/
-$page_id = 16002437;
+$page_id = (isset($_GET["id"])) ? (int)$_GET["id"] : 16002437;
 $xml_filename = 'examples/' . $page_id . '.xml';
 $image_filename = 'examples/' . $page_id . '.png';
 /*************************************************/
@@ -76,7 +76,7 @@ $(function() {
     page_id : <?php echo $page_id; ?>,
     show_replacements : false,
     show_word_replacements : true,
-    allow_anonymous : false,
+    allow_anonymous : true,
     oauth_provider : "<?php echo OAUTH_PROVIDER; ?>"
   });
   OAuth.initialize("<?php echo OAUTH_KEY; ?>");
