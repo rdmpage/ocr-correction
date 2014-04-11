@@ -35,11 +35,10 @@ var OCRCorrection = (function($) {
       edits_url : './edit.php?pageId=',
       diffs_url : './textreplacement.php',
       page_id : 0,
-      db: "ocr",
-      remote_db: "",
+      db: "http://localhost:5984/ocr",
       show_replacements: false,
-      show_word_replacements: false,
-      allow_anonymous : false,
+      show_word_replacements: true,
+      allow_anonymous : true,
       oauth_provider: "google_plus"
     },
 
@@ -186,7 +185,6 @@ var OCRCorrection = (function($) {
         history_item = $.extend({},this.vars.user,{ text : after_text });
         $(_.template(this.vars.edit_history_template.html(), history_item)).prependTo(this.vars.edit_history).hide().slideDown("slow");
         $(ele).addClass("ocr_edited");
-        this.synchronize();
       }
     },
 
@@ -224,12 +222,6 @@ var OCRCorrection = (function($) {
       });
     },
 
-    synchronize: function() {
-      if(this.settings.remote_db) {
-        this.vars.pouch_db.replicate.to(this.settings.remote_db);
-      }
-    },
-
     getEdits: function() {
       var self = this;
 /*
@@ -243,40 +235,36 @@ WIP: offline retrieval from PouchDB
         });
       });
 */
-      if(this.settings.remote_db) {
-        $.ajax({
-          type: "GET",
-          url: this.settings.edits_url + this.settings.page_id,
-          dataType: 'json',
-          success: function(response) {
-            $.each(response.rows, function() {
-              $("#line" + this.value.lineId).html(this.value.text).addClass("ocr_edited");
-              self.setUserDefaults(this.value);
-              self.vars.edit_history.prepend(_.template(self.vars.edit_history_template.html(), this.value));
-            });
-          }
-        });
-      }
+      $.ajax({
+        type: "GET",
+        url: this.settings.edits_url + this.settings.page_id,
+        dataType: 'json',
+        success: function(response) {
+          $.each(response.rows, function() {
+            $("#line" + this.value.lineId).html(this.value.text).addClass("ocr_edited");
+            self.setUserDefaults(this.value);
+            self.vars.edit_history.prepend(_.template(self.vars.edit_history_template.html(), this.value));
+          });
+        }
+      });
     },
   
     getTextReplacements: function() {
       var lines = $('.ocr_line');
 
-      if(this.settings.remote_db) {
-        $.ajax({
-          type: "GET",
-          url: this.settings.diffs_url,
-          dataType: 'json',
-          success: function(response) {
-            $.each(lines, function(i) {
-              var line = $("#line" + i);
-              $.each(response.rows, function() {
-                line.highlight(this.value, { className: 'highlight-orange' });
-              });
+      $.ajax({
+        type: "GET",
+        url: this.settings.diffs_url,
+        dataType: 'json',
+        success: function(response) {
+          $.each(lines, function(i) {
+            var line = $("#line" + i);
+            $.each(response.rows, function() {
+              line.highlight(this.value, { className: 'highlight-orange' });
             });
-          }
-        });
-      }
+          });
+        }
+      });
     },
 
     getWordAt: function(str, pos) {
@@ -328,43 +316,40 @@ WIP: offline retrieval from PouchDB
       var self = this,
           lines = $('.ocr_line');
 
-      if(this.settings.remote_db) {
+      $.ajax({
+        type: "GET",
+        url: this.settings.diffs_url,
+        dataType: 'json',
+        success: function(response) {
+          $.each(lines, function(i) {
+            var line = $("#line" + i),
+                newText = line.html();
 
-        $.ajax({
-          type: "GET",
-          url: this.settings.diffs_url,
-          dataType: 'json',
-          success: function(response) {
-            $.each(lines, function(i) {
-              var line = $("#line" + i),
-                  newText = line.html();
+            $.each(response.rows, function() {
+              if (this.key.length > 1) { //not sure we care about single char changes
+                var pos = self.findNextNonHtmlText(newText, this.key, 0),
+                    word = "", startPos;
 
-              $.each(response.rows, function() {
-                if (this.key.length > 1) { //not sure we care about single char changes
-                  var pos = self.findNextNonHtmlText(newText, this.key, 0),
-                      word = "", startPos;
+                while (pos !== -1) {
+                  word = self.getWordAt(newText, pos);
 
-                  while (pos !== -1) {
-                    word = self.getWordAt(newText, pos);
+                  //work out word start pos :-/
+                  startPos = pos - word.indexOf(this.key);
+                  newText = newText.slice(0, startPos) + 
+                  _.template(self.vars.word_replacement_template.html(), { key : this.key, value : this.value, word : word })
+                  + newText.slice(startPos + word.length);
 
-                    //work out word start pos :-/
-                    startPos = pos - word.indexOf(this.key);
-                    newText = newText.slice(0, startPos) + 
-                    _.template(self.vars.word_replacement_template.html(), { key : this.key, value : this.value, word : word })
-                    + newText.slice(startPos + word.length);
-
-                    //move to last replacement
-                    pos = newText.lastIndexOf("</span>") + 7;
-                    pos = self.findNextNonHtmlText(newText, this.key, pos);
-                  }
+                  //move to last replacement
+                  pos = newText.lastIndexOf("</span>") + 7;
+                  pos = self.findNextNonHtmlText(newText, this.key, pos);
                 }
-              });
-
-              line.html(newText);
+              }
             });
-          }
-        });
-      }
+
+            line.html(newText);
+          });
+        }
+      });
     },
 
     setUser: function(res) {

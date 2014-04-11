@@ -29,9 +29,6 @@ THE SOFTWARE.
 require_once(dirname(__FILE__) . '/config/config.inc.php');
 require_once(dirname(__FILE__) . '/lib/djvu.view.class.php');
 
-//TODO: $remote_db is used as either remote CouchDB (works as localhost) or Cloudant (no worky!) to sync from PouchDB
-$remote_db = DB_PROTOCOL . "://" . DB_HOST . ":" . DB_PORT . "/" . DB_NAME;
-
 $page_width = 800;
 
 /**************************************************
@@ -75,12 +72,11 @@ $html = $djvu->createHTML();
 <script>
 $(function() {
   OCRCorrection.initialize({
-    db : "<?php echo DB_NAME; ?>",
-    remote_db : "<?php echo $remote_db; ?>",
+    db : "<?php echo DB_PROTOCOL."://".DB_HOST.":".DB_PORT."/".DB_NAME ?>",
     page_id : <?php echo $page_id; ?>,
     show_replacements : false,
     show_word_replacements : true,
-    allow_anonymous : true,
+    allow_anonymous : false,
     oauth_provider : "<?php echo OAUTH_PROVIDER; ?>"
   });
   OAuth.initialize("<?php echo OAUTH_KEY; ?>");
