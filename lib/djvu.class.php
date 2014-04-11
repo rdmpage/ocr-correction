@@ -110,7 +110,7 @@ class DjVu {
     $dpi = $xpath->query('//PARAM[@name="DPI"]')->item(0)->getAttribute('value');
 
     if(!$dpi) {
-      throw new Exception('XML PARAM element does not have a dpi attribute');
+      throw new Exception('XML PARAM element does not have a DPI name or a value attribute');
     }
 
     return $dpi;

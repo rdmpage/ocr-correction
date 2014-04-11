@@ -45,7 +45,7 @@ $djvu->setImageWidth($page_width)
      ->addFontmetrics()
      ->addLines();
 
-$html = $djvu->createHTML();
+$html = $djvu->createHTML(PERMIT_ANON);
 ?>
 
 <html>
@@ -76,7 +76,6 @@ $(function() {
     page_id : <?php echo $page_id; ?>,
     show_replacements : false,
     show_word_replacements : true,
-    allow_anonymous : true,
     oauth_provider : "<?php echo OAUTH_PROVIDER; ?>"
   });
   OAuth.initialize("<?php echo OAUTH_KEY; ?>");

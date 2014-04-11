@@ -38,7 +38,6 @@ var OCRCorrection = (function($) {
       db: "http://localhost:5984/ocr",
       show_replacements: false,
       show_word_replacements: true,
-      allow_anonymous : true,
       oauth_provider: "google_plus"
     },
 
@@ -94,34 +93,22 @@ var OCRCorrection = (function($) {
     },
 
     bindActions: function() {
-      var self = this,
-          lines = $('.ocr_page').find('.ocr_line');
+      var self = this;
 
-      if(this.settings.allow_anonymous || this.activeUser()) {
-        lines.on('focus', function() {
-          self.vars.before_text = $(this).text();
-          self.showPopUp(this); })
-        .on('blur', function() {
-          self.closePopUp();
-          self.postEdit(this); })
-        .on('keypress', function(e) {
-          var code = e.keyCode || e.which;
-          if(code === 13) {
-            e.preventDefault();
-            $(this).next().focus();
-          }
-        });
-      } else {
-        lines.prop("contenteditable", false);
-      }
-    },
-
-    activeUser: function() {
-      if(this.vars.user.userName) {
-        return true;
-      } else {
-        return false;
-      }
+      $('.ocr_page').find('.ocr_line')
+      .on('focus', function() {
+        self.vars.before_text = $(this).text();
+        self.showPopUp(this); })
+      .on('blur', function() {
+        self.closePopUp();
+        self.postEdit(this); })
+      .on('keypress', function(e) {
+        var code = e.keyCode || e.which;
+        if(code === 13) {
+          e.preventDefault();
+          $(this).next().focus();
+        }
+      });
     },
 
     loadUser: function() {

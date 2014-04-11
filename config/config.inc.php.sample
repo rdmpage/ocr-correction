@@ -21,6 +21,9 @@ defined("DB_USER") || define("DB_USER", null);
 // CouchDB password
 defined("DB_PASS") || define("DB_PASS", null);
 
+// Allow (or not) anonymous editing
+defined("PERMIT_ANON") || define("PERMIT_ANON", true);
+
 //OAuth Public Key
 defined("OAUTH_KEY") || define("OAUTH_KEY", "");
 
