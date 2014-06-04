@@ -211,17 +211,7 @@ var OCRCorrection = (function($) {
 
     getEdits: function() {
       var self = this;
-/*
-WIP: offline retrieval from PouchDB
-      var fun = { map : function map(doc) { emit([doc.pageId, doc.time], doc); }, reduce:false },
-          options = { startkey : [this.settings.page_id], endkey : [this.settings.page_id, this.getTime()] };
 
-      this.vars.pouch_db.query(fun, options, function(err, response) {
-        $.each(response.rows, function() {
-          $("#line" + this.value.lineId).html(this.value.text).addClass("ocr_edited");
-        });
-      });
-*/
       $.ajax({
         type: "GET",
         url: this.settings.edits_url + this.settings.page_id,
