@@ -35,13 +35,17 @@ require_once(dirname(dirname(__FILE__)) . '/config/config.inc.php');
 require_once(dirname(dirname(__FILE__)) . '/lib/SimplePHPCouch/CouchSimple.class.php');
 require_once(dirname(dirname(__FILE__)) . '/lib/djvu.view.class.php');
 
-if(!isset($argv[1]) && !isset($arg[2])) { exit(); }
+$PageID = 0;
+$output = array();
 
-$PageID = $argv[1];
+if(isset($argv[0])) {
+    $PageID = $argv[1]; 
+} elseif (isset($_GET["id"])) {
+    $PageID = (int)$_GET["id"];
+}
+
 $startkey = array((int)$PageID);
 $endkey = array((int)$PageID,"{}");
-
-$directory = $argv[2];
 
 $couch = new CouchSimple(DB_PROTOCOL, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS);
 $url = 'all?startkey=' . urlencode(json_encode($startkey)) . '&endkey=' . str_replace("%22","",urlencode(json_encode($endkey)));
@@ -50,18 +54,24 @@ $all = $couch->getView('page', $url);
 $obj = json_decode($all);
 $rows = $obj->rows;
 
-//sort by pageId & time
-foreach($rows as $key => $row) {
-  $sort['pageId'][$key] = $row->key[1];
-  $sort['time'][$key] = $row->key[2];
+if(count($rows) > 1) {
+    //sort by pageId & time
+    foreach($rows as $key => $row) {
+      $sort['pageId'][$key] = $row->key[1];
+      $sort['time'][$key] = $row->key[2];
+    }
+
+    array_multisort($sort['pageId'], SORT_ASC, $sort['time'], SORT_ASC, $rows);
+
+    foreach($rows as $row) {
+      $output[$row->key[1]] = $row->value->text;
+    }
 }
 
-array_multisort($sort['pageId'], SORT_ASC, $sort['time'], SORT_ASC, $rows);
-
-foreach($rows as $row) {
-  $output[$row->key[1]] = $row->value->text;
+if(isset($argv[2])) {
+    $fp = fopen($argv[2] . "/" . $PageID . ".txt","wb");
+    fwrite($fp,implode(" \n", $output));
+    fclose($fp);
+} else {
+    echo "<pre>" . implode("\n", $output) . "</pre>";
 }
-
-$fp = fopen($directory . "/" . $PageID . ".txt","wb");
-fwrite($fp,implode(" \n", $output));
-fclose($fp);
