@@ -102,11 +102,15 @@ var OCRCorrection = (function($) {
       .on('blur', function() {
         self.closePopUp();
         self.postEdit(this); })
-      .on('keypress', function(e) {
+      .on('keydown', function(e) {
         var code = e.keyCode || e.which;
-        if(code === 13) {
+        if(code === 13 || code === 40) {
           e.preventDefault();
           $(this).next().focus();
+        }
+        if(code === 38) {
+          e.preventDefault();
+          $(this).prev().focus();
         }
       });
     },
