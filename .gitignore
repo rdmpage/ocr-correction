@@ -8,6 +8,5 @@ Thumbs.db
 ####################
 erl_crash.dump
 
-config.inc.php
-
-junk/
+config/config.php
+config/config.test.php

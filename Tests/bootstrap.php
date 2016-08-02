@@ -1,4 +1,5 @@
 <?php
+
 function switchConf($restore = false) {
   $config_dir = dirname(dirname(__FILE__)) . '/config/';
 

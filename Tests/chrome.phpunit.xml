@@ -3,7 +3,7 @@
   <php>
     <server name="HTTP_HOST" value="www.ocr-correction.local"/>
     <server name="REMOTE_ADDR" value="000.000.000"/>
-    <const name="BROWSER" value="firefox"/>
+    <const name="BROWSER" value="chrome"/>
   </php>
   <testsuites>
     <testsuite name="Unit">

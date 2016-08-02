@@ -26,18 +26,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 *******************************************************************************/
 
+require __DIR__.'/config/conf.php';
+require __DIR__.'/vendor/autoload.php';
+
+new \OCRCorrection\Bootstrap;
+
+/*
 require_once(dirname(__FILE__) . '/config/config.inc.php');
 require_once(dirname(__FILE__) . '/lib/djvu.view.class.php');
 
 $page_width = 800;
 
-/**************************************************
-  CANNED DATA THAT COULD BE PULLED FROM ELSEWHWERE
-**************************************************/
 $page_id = (isset($_GET["id"])) ? (int)$_GET["id"] : 16002437;
 $xml_filename = 'examples/' . $page_id . '.xml';
 $image_filename = 'examples/' . $page_id . '.png';
-/*************************************************/
 
 $djvu = new DjVuView($xml_filename);
 $djvu->setImageWidth($page_width)

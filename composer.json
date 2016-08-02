@@ -1,0 +1,48 @@
+{
+    "name"        : "OCR Correction",
+    "description" : "A browser-based utility to correct OCR errors in DjVU XML files and store in CouchDB",
+    "keywords"    : ["OCR", "correction"],
+    "homepage"    : "https://github.com/dshorthouse/ocr-correction",
+    "time"        : "2014-03-17",
+    "license"     : "MIT",
+    "authors": [
+        {
+          "name"  : "Roderic Page",
+          "email" : "r.page@bio.gla.ac.uk",
+          "role"  : "Developer"
+        },
+        {
+          "name"  : "David P. Shorthouse",
+          "email" : "davidpshorthouse@gmail.com",
+          "role"  : "Developer"
+        },
+        {
+          "name"  : "Kevin Richards",
+          "email" : "kevin.richards@mail.com",
+          "role"  : "Developer"
+        },
+        {
+          "name"  : "Marko Tähtinen",
+          "role"  : "Developer"
+        }
+    ],
+    "support" : {
+      "email"  : "davidpshorthouse@gmail.com",
+      "issues" : "https://github.com/dshorthouse/ocr-correction/issues",
+      "source" : "https://github.com/dshorthouse/ocr-correction"
+    },
+    "autoload" : {
+      "psr-4" : {
+        "OCRCorrection\\" : "src/"
+      }
+    },
+    "require": {
+      "doctrine/couchdb"         : "@dev",
+      "phroute/phroute"          : "2.*",
+      "twig/twig"                : "~1.0"
+    },
+    "require-dev": {
+      "phpunit/phpunit"          : "5.4.*",
+      "facebook/webdriver"       : "dev-master"
+    }
+}
