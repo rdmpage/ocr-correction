@@ -5,7 +5,7 @@ use \Phroute\Phroute\Autoloader;
 use \Phroute\Phroute\RouteCollector;
 use \Phroute\Phroute\Dispatcher;
 
-class Bootstrap
+class Router
 {
 
     /**
@@ -32,13 +32,11 @@ class Bootstrap
         $router = new RouteCollector();
 
         $router->get('/', function () {
-            return $this->_main();
+          return $this->_main();
         });
 
-        $router->post('/edit', function () {
-          // do something
-          // return something;
-          return;
+        $router->post('/edit/{id:i}', function ($id) {
+          return $this->_edit($id);
         });
 
         try {
@@ -55,6 +53,28 @@ class Bootstrap
     private function _main()
     {
       return $this->_twig()->render("main.html");
+    }
+
+    private function _edit($id)
+    {
+/*
+require_once(dirname(__FILE__) . '/config/config.inc.php');
+require_once(dirname(__FILE__) . '/lib/SimplePHPCouch/CouchSimple.class.php');
+
+if(empty($_REQUEST['pageId'])) {
+  exit();
+}
+
+$PageID = $_REQUEST['pageId'];
+$startkey = array((int)$PageID);
+$endkey = array((int)$PageID,time());
+
+$couch = new CouchSimple(DB_PROTOCOL, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS);
+$edits = $couch->getView('page', 'edits?startkey=' . urlencode(json_encode($startkey)) . '&endkey=' .  urlencode(json_encode($endkey)));
+
+header('Content-Type: application/json');
+echo $edits;
+*/
     }
 
     /**
