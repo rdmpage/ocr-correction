@@ -4,19 +4,18 @@
  * Unit tests for DjVuView
  */
 
-class DjVuViewTest extends PHPUnit_Framework_TestCase {
+class DjVuViewTest extends DjVuTest {
 
    protected $djvu;
 
    protected function setUp() {
-      $root = dirname(dirname(__FILE__));
-      $PageID = 16002437;
-      $PageWidth = 800;
-      $xml_filename = $root . '/examples/' . $PageID . '.xml';
-      $image_filename = $root . '/examples/' . $PageID . '.png';
+      $id = 16002437;
+      $width = 800;
+      $xml_filename = ROOT . '/public/examples/' . $id . '.xml';
+      $image_filename = ROOT . '/public/examples/' . $id . '.png';
 
-      $this->djvu = new DjVuView($xml_filename);
-      $this->djvu->setImageWidth($PageWidth)
+      $this->djvu = new \OCRCorrection\DjVuView($xml_filename);
+      $this->djvu->setImageWidth($width)
            ->setImageURL($image_filename)
            ->addFontmetrics()
            ->addLines();

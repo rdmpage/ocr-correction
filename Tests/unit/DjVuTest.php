@@ -3,21 +3,25 @@
 /**
  * Unit tests for DjVuView
  */
+use PHPUnit\Framework\TestCase;
 
-class DjVuTest extends PHPUnit_Framework_TestCase {
+class DjVuTest extends TestCase {
 
    protected $djvu;
 
+   public static function setUpBeforeClass() {
+     $root = dirname(__DIR__);
+     require_once $root . '../../config/config.php';
+   }
+
    protected function setUp() {
-      $root = dirname(dirname(__FILE__));
-      $PageID = 16002437;
-      $xml_filename = $root . '/examples/' . $PageID . '.xml';
-      $this->djvu = new DjVu($xml_filename);
+    $xml_filename = ROOT.'/public/examples/16002437.xml';
+    $this->djvu = new \OCRCorrection\DjVu($xml_filename);
    }
 
    public function test_cleaned_xml() {
      $dirty_string = "This is a unit separator &#31; and a vertical tab &#11;";
-     $clean_string = DjVu::clean_xml($dirty_string);
+     $clean_string = \OCRCorrection\DjVu::clean_xml($dirty_string);
      $this->assertEquals(strlen($dirty_string),strlen($clean_string)+10);
    }
 
@@ -55,7 +59,7 @@ class DjVuTest extends PHPUnit_Framework_TestCase {
      $coord1 = array(196, 254, 1653, 198);
      $coord2 = array(194, 313, 1652, 256);
      $expected = array(194, 313, 1653, 198);
-     $this->assertEquals(DjVu::merge_coordinates($coord1, $coord2), $expected);
+     $this->assertEquals(\OCRCorrection\DjVu::merge_coordinates($coord1, $coord2), $expected);
    }
 
    public function test_extraction_of_words() {
@@ -68,7 +72,7 @@ class DjVuTest extends PHPUnit_Framework_TestCase {
 
    public function test_calculation_of_mean() {
      $array = array(12,10,44,24,12);
-     $mean = DjVu::mean($array);
+     $mean = \OCRCorrection\DjVu::mean($array);
      $this->assertEquals($mean, 20.4);
    }
 

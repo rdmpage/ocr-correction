@@ -1,5 +1,8 @@
 <?php
 
+// root directory
+defined("ROOT") || define("ROOT", dirname(__DIR__));
+
 //local app for testing
 defined("HTTP_HOST") || define("HTTP_HOST", "http://www.ocr-correction.local/");
 

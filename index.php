@@ -29,7 +29,7 @@ THE SOFTWARE.
 require __DIR__.'/config/conf.php';
 require __DIR__.'/vendor/autoload.php';
 
-new \OCRCorrection\Bootstrap;
+new \OCRCorrection\Router;
 
 /*
 require_once(dirname(__FILE__) . '/config/config.inc.php');

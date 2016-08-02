@@ -10,3 +10,7 @@ erl_crash.dump
 
 config/config.php
 config/config.test.php
+
+# Composer files #
+##################
+vendor/*
