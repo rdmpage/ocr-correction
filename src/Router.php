@@ -1,4 +1,30 @@
 <?php
+
+/*******************************************************************************
+The MIT License (MIT)
+
+Copyright (c) 2014
+Roderic Page, David P. Shorthouse, Kevin Richards, Marko Tähtinen
+and the agents they represent
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*******************************************************************************/
 namespace OCRCorrection;
 
 use \Phroute\Phroute\Autoloader;
@@ -31,12 +57,20 @@ class Router
     {
         $router = new RouteCollector();
 
-        $router->get('/', function () {
-          return $this->_main();
+        $router->get('/{id:\d+}?', function ($id = 34570741) {
+          return $this->_main($id);
         });
 
-        $router->post('/edit/{id:i}', function ($id) {
-          return $this->_edit($id);
+        $router->get('/edits/{id:\d+}', function ($id = 34570741) {
+          return $this->_edits($id);
+        });
+
+        $router->post('/edit', function () {
+          return $this->_edit($_POST);
+        });
+
+        $router->get('/textreplacement', function () {
+          return $this->_textReplacements();
         });
 
         try {
@@ -50,33 +84,50 @@ class Router
 
     }
 
-    private function _main()
+    private function _main($id)
     {
-      return $this->_twig()->render("main.html");
+      $page_width = 800;
+      $xml_filename = "public/examples/{$id}.xml";
+      $image_filename = "public/examples/{$id}.png";
+
+      $djvu = new DjVuView($xml_filename);
+      $djvu->setImageWidth(800)
+           ->setImageURL($image_filename)
+           ->addFontmetrics()
+           ->addLines();
+
+      $config = array(
+        'id' => $id,
+        'image_filename' => $image_filename,
+        'content' => $djvu->createHTML(PERMIT_ANON)
+      );
+      return $this->_twig()->render("main.html", $config);
     }
 
-    private function _edit($id)
+    private function _edits($id)
     {
-/*
-require_once(dirname(__FILE__) . '/config/config.inc.php');
-require_once(dirname(__FILE__) . '/lib/SimplePHPCouch/CouchSimple.class.php');
-
-if(empty($_REQUEST['pageId'])) {
-  exit();
-}
-
-$PageID = $_REQUEST['pageId'];
-$startkey = array((int)$PageID);
-$endkey = array((int)$PageID,time());
-
-$couch = new CouchSimple(DB_PROTOCOL, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS);
-$edits = $couch->getView('page', 'edits?startkey=' . urlencode(json_encode($startkey)) . '&endkey=' .  urlencode(json_encode($endkey)));
-
-header('Content-Type: application/json');
-echo $edits;
-*/
+      header('Content-Type: application/json');
+      $db = Database::getInstance();
+      $docs = $db->getPageDocuments((int)$id);
+      echo json_encode($docs);
     }
 
+    private function _edit($params)
+    {
+      header('Content-Type: application/json');
+      $db = Database::getInstance();
+      $response = $db->postPageDocument($params);
+      echo json_encode($response);
+    }
+
+    private function _textReplacements()
+    {
+      header('Content-Type: application/json');
+      $db = Database::getInstance();
+      $docs = $db->getTextReplacements();
+      echo json_encode($docs);
+    }
+    
     /**
      * Load twig templating engine
      *
@@ -84,7 +135,7 @@ echo $edits;
      */
     private function _twig()
     {
-        $loader = new \Twig_Loader_Filesystem(ROOT. "/views");
+        $loader = new \Twig_Loader_Filesystem(ROOT . "/views");
         $cache = ROOT . "/public/tmp";
         $twig = new \Twig_Environment($loader, array('cache' => $cache, 'auto_reload' => true));
 

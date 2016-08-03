@@ -49,5 +49,4 @@ before_script:
   - curl -X PUT localhost:5984/ocr/_design/textDiff -H "Content-Type:application/json" -d@.travis/couchdb/textDiff.json
 
 script:
-  # - phpunit -c Tests/chrome.phpunit.xml --stderr
   - phpunit -c Tests/$BROWSER.phpunit.xml --stderr

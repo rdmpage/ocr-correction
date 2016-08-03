@@ -32,17 +32,16 @@ var OCRCorrection = (function($) {
   var _private = {
 
     settings: {
-      edits_url : './edit.php?pageId=',
-      diffs_url : './textreplacement.php',
+      edit_url  : '/edit',
+      edits_url : '/edits/',
+      diffs_url : '/textreplacement',
       page_id : 0,
       db: "http://localhost:5984/ocr",
       show_replacements: false,
-      show_word_replacements: true,
-      oauth_provider: "google_plus"
+      show_word_replacements: true
     },
 
     vars: {
-      pouch_db : {},
       ocr_img_container : {},
       ocr_img : {},
       edit_history: {},
@@ -52,23 +51,16 @@ var OCRCorrection = (function($) {
       before_text : "",
       user: { userAvatar : "", userName : "", userUrl : "" },
       gnrd_resource : "http://gnrd.globalnames.org/name_finder.json",
-      oauth_profile_url : {
-        google_plus : "/plus/v1/people/me",
-        github : "user",
-        twitter : "/1.1/account/verify_credentials.json"
-      }
     },
 
     initialize: function() {
       $.cookie.json = true;
       this.setVariables();
       this.setFontSize();
-      this.loadUser();
       this.bindActions();
       this.getEdits();
       if (this.settings.show_replacements) { this.getTextReplacements(); }
       if (this.settings.show_word_replacements) { this.getWordReplacements(); }
-      this.bindAuthentication();
     },
 
     setVariables: function() {
@@ -78,7 +70,6 @@ var OCRCorrection = (function($) {
       this.vars.word_replacement_template = $('#word_replacement_template');
       this.vars.ocr_img_container = $('#ocr_image_container');
       this.vars.ocr_img = $("#ocr_image");
-      this.vars.pouch_db = new PouchDB(this.settings.db);
     },
 
     setFontSize: function() {
@@ -107,13 +98,18 @@ var OCRCorrection = (function($) {
         if(code === 13) {
           e.preventDefault();
           $(this).next().focus();
+        }})
+      .on('keydown', function(e) {
+        var code = e.keyCode || e.which;
+        if (code === 38) {
+          e.preventDefault();
+          $(this).prev().focus();
+        }
+        if (code === 40) {
+          e.preventDefault();
+          $(this).next().focus();
         }
       });
-    },
-
-    loadUser: function() {
-      var user = $.cookie("ocr_correction");
-      if(user) { this.vars.user = user; }
     },
 
     setUserDefaults: function(obj) {
@@ -147,22 +143,25 @@ var OCRCorrection = (function($) {
           after_text = $(ele).text(),
           timestamp = this.getTime(), //10 digit timestamp for PHP
           history_item = {},
+          data = {},
           url = "";
 
       if (after_text !== this.vars.before_text){
-        this.vars.pouch_db.post({
-          type: "edit",
+        data = {
           time: timestamp,
           pageId: this.settings.page_id,
           lineId: parseInt($(ele).attr("id").replace("line", ""), 10),
           ocr: $(ele).attr("data-ocr"),
-          text: after_text,
-          userName : this.vars.user.userName,
-          userAvatar: this.vars.user.userAvatar,
-          userUrl: this.vars.user.userUrl
-        }, function(err, response) {
-          if(err) { console.log(err); }
-          self.unusedVariables(response);
+          text: after_text
+        };
+        $.ajax({
+          type: "POST",
+          url: this.settings.edit_url,
+          data: data,
+          dataType: 'json',
+          success: function(data) {
+            //console.log(data);
+          }
         });
 
         url = this.vars.gnrd_resource + "?text=" + encodeURIComponent(after_text);
@@ -197,7 +196,7 @@ var OCRCorrection = (function($) {
             }, 2000);
           } else if(response.status === 200) {
             if(response.names.length > 0) {
-              names = $.map(response.names, function(i) { return i.identifiedName; });
+              names = $.map(response.names, function(i) { return i.scientificName; });
               ele.tooltipster({
                 content: $(_.template(self.vars.name_tooltip_template.html(), { names : names.join(", ") })),
                 interactive: true
@@ -211,23 +210,13 @@ var OCRCorrection = (function($) {
 
     getEdits: function() {
       var self = this;
-/*
-WIP: offline retrieval from PouchDB
-      var fun = { map : function map(doc) { emit([doc.pageId, doc.time], doc); }, reduce:false },
-          options = { startkey : [this.settings.page_id], endkey : [this.settings.page_id, this.getTime()] };
 
-      this.vars.pouch_db.query(fun, options, function(err, response) {
-        $.each(response.rows, function() {
-          $("#line" + this.value.lineId).html(this.value.text).addClass("ocr_edited");
-        });
-      });
-*/
       $.ajax({
         type: "GET",
         url: this.settings.edits_url + this.settings.page_id,
         dataType: 'json',
         success: function(response) {
-          $.each(response.rows, function() {
+          $.each(response, function() {
             $("#line" + this.value.lineId).html(this.value.text).addClass("ocr_edited");
             self.setUserDefaults(this.value);
             self.vars.edit_history.prepend(_.template(self.vars.edit_history_template.html(), this.value));
@@ -246,7 +235,7 @@ WIP: offline retrieval from PouchDB
         success: function(response) {
           $.each(lines, function(i) {
             var line = $("#line" + i);
-            $.each(response.rows, function() {
+            $.each(response, function() {
               line.highlight(this.value, { className: 'highlight-orange' });
             });
           });
@@ -312,14 +301,13 @@ WIP: offline retrieval from PouchDB
             var line = $("#line" + i),
                 newText = line.html();
 
-            $.each(response.rows, function() {
+            $.each(response, function() {
               if (this.key.length > 1) { //not sure we care about single char changes
                 var pos = self.findNextNonHtmlText(newText, this.key, 0),
                     word = "", startPos;
 
                 while (pos !== -1) {
                   word = self.getWordAt(newText, pos);
-
                   //work out word start pos :-/
                   startPos = pos - word.indexOf(this.key);
                   newText = newText.slice(0, startPos) + 
@@ -336,55 +324,6 @@ WIP: offline retrieval from PouchDB
             line.html(newText);
           });
         }
-      });
-    },
-
-    setUser: function(res) {
-      switch(this.settings.oauth_provider) {
-        case "github":
-          this.vars.user = {
-            userName : res.name,
-            userAvatar : res.avatar_url,
-            userUrl : res.html_url
-          };
-        break;
-
-        case "google_plus":
-          this.vars.user = {
-            userName : res.displayName,
-            userAvatar : res.image.url,
-            userUrl : res.url
-          };
-        break;
-
-        case "twitter":
-          this.vars.user = {
-            userName : res.name,
-            userAvatar : res.profile_image_url,
-            userUrl : "https://twitter.com/" + res.screen_name
-          };
-        break;
-      }
-    },
-
-    bindAuthentication: function() {
-      var self = this;
-
-      $('#ocr_signin').on("click", function(e) {
-        e.preventDefault();
-        OAuth.popup(self.settings.oauth_provider, function(error, result) {
-          if (error) { return; }
-          result.get(self.vars.oauth_profile_url[self.settings.oauth_provider]).done(function(res) {
-            self.setUser(res);
-            $.cookie('ocr_correction', self.vars.user, { expires: 7 });
-            window.location.reload(true);
-          });
-        });
-      });
-      $('#ocr_signout').on("click", function(e) {
-        e.preventDefault();
-        $.removeCookie('ocr_correction');
-        window.location.reload(true);
       });
     },
 

@@ -3,21 +3,30 @@
 /**
  * IntegrationTest
  */
+use PHPUnit\Framework\TestCase;
 
-class IntegrationTest extends PHPUnit_Framework_TestCase {
+class IntegrationTest extends TestCase {
 
   protected $webDriver;
   protected $base_url;
 
-  public function setUp() {
+  public static function setUpBeforeClass() {
+    $root = dirname(__DIR__);
+    require_once $root . '../../config/config.php';
+  }
+
+  protected function setUp() {
     $this->base_url = HTTP_HOST;
     $host = 'http://localhost:4444/wd/hub';
-    $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => BROWSER);
+    $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => BROWSER, WebDriverCapabilityType::HANDLES_ALERTS => true);
     $this->webDriver = RemoteWebDriver::create($host, $capabilities);
+    $this->webDriver->manage()->window()->setSize(new WebDriverDimension(1280, 1024));
   }
 
   public function tearDown() {
-    $this->webDriver->close();
+    if(method_exists($this->webDriver, 'close')) {
+        $this->webDriver->close();
+    }
   }
 
   public function testPageTitle() {
@@ -25,39 +34,5 @@ class IntegrationTest extends PHPUnit_Framework_TestCase {
     $title = $this->webDriver->getTitle();
     $this->assertEquals('OCR Correction', $title);
   }
-
-/*
-  public function testOriginalTextAppears() {
-    //TODO: how to get correct clipping?
-  }
-  
-  public function testAnonUserEditInScroller() {
-    
-  }
-
-  public function testLogIn() {
-    
-  }
-  
-  public function testEditIsPreserved() {
-    //TODO: have to do page refresh here
-  }
-  
-  public function testAuthenticatedUserEditInScroller() {
-    
-  }
-
-  public function testHighlightingCorrection() {
-    
-  }
-  
-  public function testScientificNameRecognized() {
-    
-  }
-  
-  public function testWordReplacements() {
-    //TODO: have to do page refresh here
-  }
-*/
 }
 ?>

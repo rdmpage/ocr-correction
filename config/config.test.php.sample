@@ -24,7 +24,7 @@ defined("DB_USER") || define("DB_USER", null);
 // CouchDB password
 defined("DB_PASS") || define("DB_PASS", null);
 
-//OAuth Public Key
-defined("OAUTH_KEY") || define("OAUTH_KEY", "");
+// Allow (or not) anonymous editing
+defined("PERMIT_ANON") || define("PERMIT_ANON", true);
 
 date_default_timezone_set('UTC');

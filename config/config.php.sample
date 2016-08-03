@@ -27,10 +27,4 @@ defined("DB_PASS") || define("DB_PASS", null);
 // Allow (or not) anonymous editing
 defined("PERMIT_ANON") || define("PERMIT_ANON", true);
 
-//OAuth Public Key
-defined("OAUTH_KEY") || define("OAUTH_KEY", "");
-
-//OAuth Provider
-defined("OAUTH_PROVIDER") || define("OAUTH_PROVIDER", "google_plus");
-
 date_default_timezone_set('UTC');

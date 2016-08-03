@@ -14,3 +14,7 @@ config/config.test.php
 # Composer files #
 ##################
 vendor/*
+
+# Cache files #
+###############
+public/tmp/*
