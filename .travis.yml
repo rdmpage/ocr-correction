@@ -8,32 +8,60 @@ env:
     - HOST=www.ocr-correction.local
     - BROWSER=firefox
 
+addons:
+  firefox: "41.0.1"
+  hosts:
+    - www.ocr-correction.local
+  apt:
+    packages:
+      - apache2
+      - build-essential
+      - libapache2-mod-fastcgi
+      - php5-cli
+      - php5-common
+      - php5-dev
+      - php5-fpm
+      - php5-curl
+      - php-pear
+      - locales
+      - gettext
+      - autoconf
+      - xvfb
+      - curl
+      - cmake
+
 services:
   - couchdb
 
 install:
-  # Install dependencies
-  - sh -e .travis/scripts/apt-get.sh
-
   # Install Composer dependencies
   - composer self-update
   - composer global require hirak/prestissimo
   - composer install
 
-before_script:
-  # enable php-fpm because Travis doesn't do libapache2-mod-php5
-  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
-  - sh -e .travis/scripts/apache2-configure.sh
-  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+  # PHP configuration
+  - phpenv config-add .travis/travis.php.ini
+  - phpenv rehash
 
-  # Apache web server config for vhosts
+  # PHP-FPM configuration
+  - sh -e .travis/scripts/php-fpm.sh
+
+before_script:
+  # Copy config file
+  - sudo cp config/conf.test.php config/conf.php
+  
+  # Apache config
+  - sh -e .travis/scripts/apache2-configure.sh
+
+  # Apache vhosts
   - sh -e .travis/scripts/apache2-vhost.sh "$HOST"
 
   # PHP config
   - phpenv config-add .travis/travis.php.ini
 
   # Restart Apache
+  # Restart PHP-FCGI and Apache
+  - phpenv rehash
   - sudo service apache2 restart
   
   # CouchDB configuration
