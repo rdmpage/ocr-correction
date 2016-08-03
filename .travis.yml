@@ -11,22 +11,16 @@ env:
 services:
   - couchdb
 
-before_install:
-  # Selenium
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - "wget http://selenium-release.storage.googleapis.com/2.40/selenium-server-standalone-2.40.0.jar"
-  # - "java -jar selenium-server-standalone-2.40.0.jar -Dwebdriver.chrome.driver=/usr/bin/chromedriver > /dev/null &"
-  - "java -jar selenium-server-standalone-2.40.0.jar > /dev/null &"
-  - sleep 10
-
 install:
   # Install dependencies
   - sh -e .travis/scripts/apt-get.sh
 
-before_script:
+  # Install Composer dependencies
+  - composer self-update
+  - composer global require hirak/prestissimo
+  - composer install
 
-  # Apache config
+before_script:
   # enable php-fpm because Travis doesn't do libapache2-mod-php5
   - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
   - sh -e .travis/scripts/apache2-configure.sh
@@ -44,9 +38,14 @@ before_script:
   
   # CouchDB configuration
   - sudo service couchdb restart
+  - sleep 3
   - curl -X PUT localhost:5984/ocr
   - curl -X PUT localhost:5984/ocr/_design/page -H "Content-Type:application/json" -d@.travis/couchdb/page.json
   - curl -X PUT localhost:5984/ocr/_design/textDiff -H "Content-Type:application/json" -d@.travis/couchdb/textDiff.json
 
+  # Selenium
+  - sh -e .travis/scripts/selenium.sh
+  - sleep 3
+
 script:
-  - phpunit -c Tests/$BROWSER.phpunit.xml --stderr
+  - travis_retry php vendor/bin/phpunit -c Tests/$BROWSER.phpunit.xml --stderr
