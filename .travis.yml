@@ -48,7 +48,7 @@ install:
 
 before_script:
   # Copy config file
-  - sudo cp config/conf.test.php config/conf.php
+  - sudo cp config/config.test.php config/config.php
   
   # Apache config
   - sh -e .travis/scripts/apache2-configure.sh
