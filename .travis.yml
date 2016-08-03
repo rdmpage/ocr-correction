@@ -56,17 +56,11 @@ before_script:
   # Apache vhosts
   - sh -e .travis/scripts/apache2-vhost.sh "$HOST"
 
-  # PHP config
-  - phpenv config-add .travis/travis.php.ini
-
-  # Restart Apache
   # Restart PHP-FCGI and Apache
   - phpenv rehash
   - sudo service apache2 restart
   
-  # CouchDB configuration
-  - sudo service couchdb restart
-  - sleep 3
+  # CouchDB views
   - curl -X PUT localhost:5984/ocr
   - curl -X PUT localhost:5984/ocr/_design/page -H "Content-Type:application/json" -d@.travis/couchdb/page.json
   - curl -X PUT localhost:5984/ocr/_design/textDiff -H "Content-Type:application/json" -d@.travis/couchdb/textDiff.json
