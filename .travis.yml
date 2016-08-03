@@ -50,7 +50,10 @@ before_script:
   # Copy config file
   - sudo cp config/config.test.php.sample config/config.test.php
   - sudo cp config/config.php.sample config/config.php
-  
+
+  # Directory permissions
+  - sh -e .travis/scripts/permissions.sh
+
   # Apache config
   - sh -e .travis/scripts/apache2-configure.sh
 
