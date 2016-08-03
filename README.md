@@ -7,7 +7,7 @@ Web interface for correcting OCR text from BHL. Goal is to provide a simple inte
 
 ## Requirements & Dependencies
 
-This code requires [CouchDB](http://couchdb.apache.org), PHP 5.5+, and a local web server such as Apache with mod\_rewrite enabled. Install all necessary dependencies using [composer](https://getcomposer.org) and update them as required from the ocr-correction source directory.
+This code requires [CouchDB](http://couchdb.apache.org), PHP 5.6+, and a local web server such as Apache with mod\_rewrite enabled. Install all necessary dependencies using [composer](https://getcomposer.org) and update them as required from the ocr-correction source directory.
 
     $ composer install
     $ composer update
