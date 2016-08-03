@@ -4,7 +4,7 @@ BASEDIR=$(dirname $0)
 BASEDIR=$(readlink -f "$BASEDIR/..")
 ROOTDIR=$(readlink -f "$BASEDIR/..")
 
-VHOSTNAME="www.ocr.local"
+VHOSTNAME="www.ocr-correction.local"
 if [ "$1" ]
 then
     VHOSTNAME="$1"
