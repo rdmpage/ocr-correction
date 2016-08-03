@@ -37,13 +37,15 @@ Example Apache VirtualHost
       </Directory>
     </VirtualHost>
 
+If you use something like www.ocr-correction.local for the ServerName, don't forget to adjust your /etc/hosts file.
+
 ### Create database and views
 
 Use the included, self-executable command-line utility to create the database and two necessary views:
 
   ./bin/initialize.php --create
 
-## URLs for page image and DjVu XML
+## Page images and DjVu XML files
 
 You can fetch page images and DjVu XML from BioStor.
 
@@ -51,8 +53,13 @@ You can fetch page images and DjVu XML from BioStor.
 
 [http://biostor.org/bhl_page_bw_image.php?PageID=34570741](http://biostor.org/bhl_page_bw_image.php?PageID=34570741)
 
-Tests
------
+## Running in the Browser
+
+Assuming your application is running via www.ocr-correction.local, you can access the included /public/examples by appending the PageId as part of the path:
+
+http://www.ocr-correction.local/16002437
+
+## Tests
 
 PHPUnit is used for unit tests and [Selenium](http://selenium-release.storage.googleapis.com/index.html?path=2.53/) and Facebook's [php-webdriver](https://github.com/facebook/php-webdriver) are used for integration tests. [Composer](https://getcomposer.org/) is used to include dependencies.
 
