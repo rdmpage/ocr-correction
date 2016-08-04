@@ -12,24 +12,17 @@ addons:
   firefox: "41.0.1"
   hosts:
     - www.ocr-correction.local
-  apt:
-    packages:
-      - apache2
-      - build-essential
-      - libapache2-mod-fastcgi
-      - php5-fpm
-      - locales
-      - gettext
-      - autoconf
-      - xvfb
-      - curl
-      - cmake
 
 services:
   - couchdb
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install apache2 libapache2-mod-fastcgi
+
 install:
   # PHP configuration
+  - phpenv config-rm xdebug.ini
   - phpenv config-add .travis/travis.php.ini
   - phpenv rehash
 
