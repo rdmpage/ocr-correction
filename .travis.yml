@@ -17,12 +17,7 @@ addons:
       - apache2
       - build-essential
       - libapache2-mod-fastcgi
-      - php5-cli
-      - php5-common
-      - php5-dev
       - php5-fpm
-      - php5-curl
-      - php-pear
       - locales
       - gettext
       - autoconf
@@ -65,9 +60,10 @@ before_script:
   - sudo service apache2 restart
   
   # CouchDB views
-  - curl -X PUT localhost:5984/ocr
-  - curl -X PUT localhost:5984/ocr/_design/page -H "Content-Type:application/json" -d@.travis/couchdb/page.json
-  - curl -X PUT localhost:5984/ocr/_design/textDiff -H "Content-Type:application/json" -d@.travis/couchdb/textDiff.json
+  - php bin/initalize.php --create
+  #- curl -X PUT localhost:5984/ocr
+  #- curl -X PUT localhost:5984/ocr/_design/page -H "Content-Type:application/json" -d@.travis/couchdb/page.json
+  #- curl -X PUT localhost:5984/ocr/_design/textDiff -H "Content-Type:application/json" -d@.travis/couchdb/textDiff.json
 
   # Selenium
   - sh -e .travis/scripts/selenium.sh
