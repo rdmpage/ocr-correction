@@ -18,28 +18,23 @@ services:
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install build-essential apache2 libapache2-mod-fastcgi php-fpm gettext autoconf
+  - sudo apt-get install build-essential apache2 libapache2-mod-fastcgi
 
 install:
-  # PHP configuration
-  - phpenv config-add .travis/travis.php.ini
-  - phpenv rehash
+  # Directory permissions
+  - sh -e .travis/scripts/permissions.sh
 
-  # PHP-FPM configuration
-  - sh -e .travis/scripts/php-fpm.sh
-
-  # Install Composer dependencies
-  - composer self-update
-  - composer global require hirak/prestissimo
-  - composer install
-
-before_script:
   # Copy config file
   - sudo cp config/config.test.php.sample config/config.test.php
   - sudo cp config/config.php.sample config/config.php
 
-  # Directory permissions
-  - sh -e .travis/scripts/permissions.sh
+before_script:
+  # PHP configuration
+  - phpenv config-rm xdebug.ini
+  - phpenv config-add .travis/travis.php.ini
+
+  # PHP-FPM configuration
+  - sh -e .travis/scripts/php-fpm.sh
 
   # Apache config
   - sh -e .travis/scripts/apache2-configure.sh
@@ -50,6 +45,11 @@ before_script:
   # Restart PHP-FCGI and Apache
   - phpenv rehash
   - sudo service apache2 restart
+
+  # Install Composer dependencies
+  - composer self-update
+  - composer global require hirak/prestissimo
+  - composer install
   
   # CouchDB views
   - php bin/initalize.php --create
