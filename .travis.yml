@@ -18,7 +18,7 @@ services:
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install apache2 libapache2-mod-fastcgi
+  - sudo apt-get install build-essential apache2 libapache2-mod-fastcgi php5-fpm gettext autoconf
 
 install:
   # PHP configuration
