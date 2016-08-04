@@ -29,17 +29,17 @@ services:
   - couchdb
 
 install:
-  # Install Composer dependencies
-  - composer self-update
-  - composer global require hirak/prestissimo
-  - composer install
-
   # PHP configuration
   - phpenv config-add .travis/travis.php.ini
   - phpenv rehash
 
   # PHP-FPM configuration
   - sh -e .travis/scripts/php-fpm.sh
+
+  # Install Composer dependencies
+  - composer self-update
+  - composer global require hirak/prestissimo
+  - composer install
 
 before_script:
   # Copy config file
@@ -61,9 +61,6 @@ before_script:
   
   # CouchDB views
   - php bin/initalize.php --create
-  #- curl -X PUT localhost:5984/ocr
-  #- curl -X PUT localhost:5984/ocr/_design/page -H "Content-Type:application/json" -d@.travis/couchdb/page.json
-  #- curl -X PUT localhost:5984/ocr/_design/textDiff -H "Content-Type:application/json" -d@.travis/couchdb/textDiff.json
 
   # Selenium
   - sh -e .travis/scripts/selenium.sh
