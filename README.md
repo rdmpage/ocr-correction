@@ -1,7 +1,9 @@
 OCR correction in browser for Leiden Hackathon
 ==============================================
 
-Web interface for correcting OCR text from BHL. Goal is to provide a simple interface for interactive editing of text, as well as tools to make inferences from the edits (e.g., frequency of certain kinds of OCR errors).
+A web interface for correcting OCR text from the Biodiversity Heritage Library as DjVu XML files and corresponding full page png images. The goal is to provide a simple interface for interactive editing of text, as well as tools to make inferences from the edits (e.g., frequency of certain kinds of OCR errors).
+
+The [hackathon](http://www.naturalis.nl/en/news/bioinformatics/hackathon-nutshell/) took place March 2014 in Leiden, the Netherlands and was sponsored by [Naturalis Biodiversity Center](http://www.naturalis.nl/) and [pro-iBiosphere](http://www.pro-ibiosphere.eu/). See the [follow-up paper](http://doi.org/10.3897/BDJ.2.e1125) in the Biodiversity Data Journal.
 
 [![Build Status](https://secure.travis-ci.org/dshorthouse/ocr-correction.png?branch=master)](http://travis-ci.org/dshorthouse/ocr-correction)
 
@@ -43,14 +45,13 @@ If you use something like www.ocr-correction.local for the ServerName, don't for
 
 Use the included, self-executable command-line utility to create the database and two necessary views:
 
-  $ ./bin/initialize.php --create
+    $ ./bin/initialize.php --create
 
 ## Page images and DjVu XML files
 
 You can fetch page images and DjVu XML from BioStor.
 
-[http://biostor.org/bhl_page_xml.php?PageID=34570741](http://biostor.org/bhl_page_xml.php?PageID=34570741)
-
+[http://biostor.org/bhl_page_xml.php?PageID=34570741](http://biostor.org/bhl_page_xml.php?PageID=34570741)  
 [http://biostor.org/bhl_page_bw_image.php?PageID=34570741](http://biostor.org/bhl_page_bw_image.php?PageID=34570741)
 
 ## Running in the Browser
@@ -63,11 +64,16 @@ http://www.ocr-correction.local/16002437
 
 PHPUnit is used for unit tests and [Selenium](http://selenium-release.storage.googleapis.com/index.html?path=2.53/) and Facebook's [php-webdriver](https://github.com/facebook/php-webdriver) are used for integration tests. [Composer](https://getcomposer.org/) is used to include dependencies.
 
+
+### FireFox
+
     $ java -jar selenium-server-standalone-2.53.1.jar
 
 Then from a second terminal window:
 
     $ ./vendor/bin/phpunit -c Tests/firefox.phpunit.xml
+
+### Chrome
 
 If you wish to use Chrome instead of FireFox, the Selenium Chromedriver can be found at [http://chromedriver.storage.googleapis.com/index.html](http://chromedriver.storage.googleapis.com/index.html):
 
@@ -77,13 +83,7 @@ Then from a second terminal window:
 
     $ ./vendor/bin/phpunit -c Tests/chrome.phpunit.xml
 
-Likewise, if you wish to use a headless webdriver such as [PhantomJS](http://phantomjs.org/):
-
-    $ java -jar selenium-server-standalone-2.53.1 -Dphantomjs.binary.path=/usr/local/bin/phantomjs
-
-Then from a second terminal window:
-
-    $ ./vendor/bin/phpunit -c Tests/phantomjs.phpunit.xml
+### Test Suites
 
 Tests are split into suites entitled, "Unit", "Functional"
 
