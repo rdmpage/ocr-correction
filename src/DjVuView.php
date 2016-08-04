@@ -1,5 +1,4 @@
 <?php
-
 /*******************************************************************************
 The MIT License (MIT)
 
@@ -32,19 +31,21 @@ class DjVuView extends DjVu {
   private $image_width = 800;
   private $image_url = '';
 
-  public function setImageWidth($width) {
+  public function setImageWidth($width)
+  {
     $this->image_width = $width;
     return $this;
   }
 
-  public function setImageURL($url) {
+  public function setImageURL($url)
+  {
     $this->image_url = $url;
     return $this;
   }
 
-  public function addFontmetrics() {
+  public function addFontmetrics()
+  {
     // Compute font sizes
-
     foreach ($this->page_structure->regions as $region) {
       foreach ($region->paragraphs as $paragraph) {
         $fontmetrics = new \stdClass;
@@ -59,9 +60,15 @@ class DjVuView extends DjVu {
           $count++;
           $last_baseline = $line->fontmetrics->baseline;
 
-          if (isset($line->fontmetrics->ascender)) { $fontmetrics->ascender[] = $line->fontmetrics->ascender; }
-          if (isset($line->fontmetrics->capheight)) { $fontmetrics->capheight[] = $line->fontmetrics->capheight; }
-          if (isset($line->fontmetrics->descender)) { $fontmetrics->descender[] = $line->fontmetrics->descender; }
+          if (isset($line->fontmetrics->ascender)) {
+            $fontmetrics->ascender[] = $line->fontmetrics->ascender;
+          }
+          if (isset($line->fontmetrics->capheight)) {
+            $fontmetrics->capheight[] = $line->fontmetrics->capheight;
+          }
+          if (isset($line->fontmetrics->descender)) {
+            $fontmetrics->descender[] = $line->fontmetrics->descender;
+          }
         }
 
         $paragraph->fontmetrics = new \stdClass;
@@ -86,14 +93,14 @@ class DjVuView extends DjVu {
     return $this;
   }
 
-  public function addLines(){
+  public function addLines()
+  {
     $scale = $this->image_width/$this->page_structure->bbox[2];
 
     $line_counter = 0;
 
-    foreach ($this->page_structure->regions as $region){
-
-      foreach ($region->paragraphs as $paragraph){
+    foreach ($this->page_structure->regions as $region) {
+      foreach ($region->paragraphs as $paragraph) {
         // font height
         $fontsize = 0;
 
@@ -125,7 +132,8 @@ class DjVuView extends DjVu {
     return $this;
   }
 
-  public function createHTML($anon = 'true') {
+  public function createHTML($anon = 'true')
+  {
 
     $editable = ($anon || $anon == 'true') ? 'true' : 'false';
     if(isset($_COOKIE['ocr_correction'])) {
@@ -142,15 +150,36 @@ class DjVuView extends DjVu {
     $ocr_page = $doc->appendChild($doc->createElement('div'));
     $ocr_page->setAttribute('class', 'ocr_page');
 
-    foreach ($this->page_structure->lines as $line){
+    foreach ($this->page_structure->lines as $line) {
       $ocr_line = $ocr_page->appendChild($doc->createElement('div'));
 
       $ocr_line->setAttribute('id', "line" . $line->id);
       $ocr_line->setAttribute('class', 'ocr_line');
       $ocr_line->setAttribute('contenteditable', $editable);
       $ocr_line->setAttribute('class', 'ocr_line');
-      $ocr_line->setAttribute('style', 'font-size:' . $line->fontsize . 'px;line-height:' . $line->fontsize . 'px;position:absolute;left:' . ($line->bbox[0] * $scale) . 'px;top:' . ($line->bbox[3] * $scale)  . 'px;min-width:' . ($scale * ($line->bbox[2] - $line->bbox[0])) . 'px;height:' . ($scale * ($line->bbox[1] - $line->bbox[3])) . 'px;');
-      $ocr_line->setAttribute('data-bbox', 'bbox ' . ($line->bbox[0] * $scale) . ' ' . ($line->bbox[3] * $scale)  . ' ' . ($scale *$line->bbox[2])  . ' ' . ($scale *$line->bbox[1]) );
+
+      $left = $scale*$line->bbox[0];
+      $top = $scale*$line->bbox[3];
+      $width = $scale*($line->bbox[2]-$line->bbox[0]);
+      $height = $scale*($line->bbox[1]-$line->bbox[3]);
+
+      $style  = "font-size:{$line->fontsize}px;";
+      $style .= "line-height:{$line->fontsize}px;";
+      $style .= "position:absolute;";
+      $style .= "left:{$left}px;";
+      $style .= "top:{$top}px;";
+      $style .= "min-width:{$width}px;";
+      $style .= "height:{$height}px;";
+      $ocr_line->setAttribute('style', $style);
+
+      $bbox = join(" ", [
+        $scale*$line->bbox[0],
+        $scale*$line->bbox[3],
+        $scale*$line->bbox[2],
+        $scale*$line->bbox[1]
+        ]
+      );
+      $ocr_line->setAttribute('data-bbox', 'bbox ' . $bbox);
 
       // original OCR
       $ocr_line->setAttribute('data-ocr', $line->text);

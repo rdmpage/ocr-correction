@@ -1,5 +1,4 @@
 <?php
-
 /*******************************************************************************
 The MIT License (MIT)
 
@@ -32,7 +31,6 @@ class Database
 {
   static $_client;
   private $_link;
-  
 
   /**
    * Constructor
@@ -66,10 +64,10 @@ class Database
    */
   public static function getInstance()
   {
-      if (!(self::$_client instanceof self)) {
-          self::$_client = new self();
-      }
-      return self::$_client;
+    if (!(self::$_client instanceof self)) {
+      self::$_client = new self();
+    }
+    return self::$_client;
   }
 
   public function getDatabaseInfo()

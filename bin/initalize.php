@@ -1,8 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-require_once(__DIR__ . "/../vendor/autoload.php");
 require_once(__DIR__ . "/../config/config.php");
+require_once(__DIR__ . "/../vendor/autoload.php");
 
 use \CHH\Optparse;
 
@@ -20,9 +20,9 @@ $parser->addFlag("create", array("alias" => "-c"));
 $parser->addFlag("destroy", array("alias" => "-d"));
 
 try {
-    $parser->parse();
+  $parser->parse();
 } catch (\Optparse\Exception $e) {
-    usage_and_exit();
+  usage_and_exit();
 }
 
 if ($parser["create"]) {

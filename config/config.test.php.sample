@@ -28,3 +28,5 @@ defined("DB_PASS") || define("DB_PASS", null);
 defined("PERMIT_ANON") || define("PERMIT_ANON", true);
 
 date_default_timezone_set('UTC');
+mb_internal_encoding("UTF-8");
+mb_http_output("UTF-8");

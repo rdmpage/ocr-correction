@@ -1,5 +1,4 @@
 <?php
-
 /*******************************************************************************
 The MIT License (MIT)
 
@@ -30,18 +29,18 @@ use \Doctrine\CouchDB\View\DesignDocument as DesignDocument;
 
 class PagesDesignDocument implements DesignDocument
 {
-    public function getData()
-    {
-        return array(
-          "language" => "javascript",
-          "views" => array(
-            "edits" => array(
-              "map" => "function(doc) { if(doc.type === \"edit\") { emit([doc.pageId, doc.time], doc); } }"
-            ),
-            "all" => array(
-              "map" => "function(doc) { emit([doc.pageId, doc.lineId, doc.time], doc); }"
-            )
-          )
-        );
-    }
+  public function getData()
+  {
+    return array(
+      "language" => "javascript",
+      "views" => array(
+        "edits" => array(
+          "map" => "function(doc) { if(doc.type === \"edit\") { emit([doc.pageId, doc.time], doc); } }"
+        ),
+        "all" => array(
+          "map" => "function(doc) { emit([doc.pageId, doc.lineId, doc.time], doc); }"
+        )
+      )
+    );
+  }
 }

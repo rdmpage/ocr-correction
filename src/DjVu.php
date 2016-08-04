@@ -1,5 +1,4 @@
 <?php
-
 /*******************************************************************************
 The MIT License (MIT)
 
@@ -32,7 +31,8 @@ class DjVu {
   private $filename;
   public $page_structure;
 
-  public static function mean($a){
+  public static function mean($a)
+  {
     $average = 0;
     $n = count($a);
     $sum = 0;
@@ -43,13 +43,15 @@ class DjVu {
     return $average;
   }
 
-  public static function clean_xml($xml) {
+  public static function clean_xml($xml)
+  {
     $xml = str_replace("&#31;", "", $xml);
     $xml = str_replace("&#11;", "", $xml);
     return $xml;
   }
 
-  public static function merge_coordinates($c1, $c2){
+  public static function merge_coordinates($c1, $c2)
+  {
     $coords = array();
     $coords[0] = min($c1[0], $c2[0]); // min-x
     $coords[1] = max($c1[1], $c2[1]); // max-y
@@ -58,7 +60,8 @@ class DjVu {
     return $coords;
   }
 
-  function __construct($filename) {
+  function __construct($filename)
+  {
     $this->filename = $filename;
     try {
       $this->build_page_structure();
@@ -67,8 +70,8 @@ class DjVu {
     }
   }
 
-  public function build_page_structure() {
-
+  public function build_page_structure()
+  {
     $xml = $this->load_file();
 
     // Remove any spurious things which break XML parsers
@@ -97,7 +100,8 @@ class DjVu {
     return $this;
   }
 
-  private function load_file() {
+  private function load_file()
+  {
     $xml = file_get_contents($this->filename);
 
     if(!$xml) {
@@ -107,7 +111,8 @@ class DjVu {
     return $xml;
   }
 
-  private function page_dpi($xpath) {
+  private function page_dpi($xpath)
+  {
     $dpi = $xpath->query('//PARAM[@name="DPI"]')->item(0)->getAttribute('value');
 
     if(!$dpi) {
@@ -117,7 +122,8 @@ class DjVu {
     return $dpi;
   }
 
-  private function page_bbox($xpath) {
+  private function page_bbox($xpath)
+  {
     $bbox = array(0,0,0,0);
 
     $bbox[1] = $xpath->query('//OBJECT')->item(0)->getAttribute('height');
@@ -134,7 +140,8 @@ class DjVu {
     return $bbox;
   }
 
-  private function page_regions($xpath) {
+  private function page_regions($xpath)
+  {
     $regions = array();
 
     foreach($xpath->query('//REGION') as $region) {
@@ -163,11 +170,11 @@ class DjVu {
           $line_object->text = '';
 
           // Add line bbox to paragraph bbox
-          $line_object->bbox = $this->line_coordinates($xpath, $line, $line_object->text);
+          $line_object->bbox = $this->_line_coordinates($xpath, $line, $line_object->text);
           $paragraph_object->bbox = self::merge_coordinates($paragraph_object->bbox, $line_object->bbox);
 
           // Extract words
-          $line_object->words = $this->extract_words($xpath, $line);
+          $line_object->words = $this->_extract_words($xpath, $line);
 
           // Font info
           $line_object->baseline = $this->page_structure->bbox[1];
@@ -227,7 +234,8 @@ class DjVu {
     return $regions;
   }
 
-  private function line_coordinates($xpath, $node, &$line_text){
+  private function _line_coordinates($xpath, $node, &$line_text)
+  {
     $line_bbox = array(100000,0,0,100000);
     $line_text = '';
     $word_count = 0;
@@ -254,7 +262,8 @@ class DjVu {
     return $line_bbox;
   }
 
-  private function extract_words($xpath, $node){
+  private function _extract_words($xpath, $node)
+  {
     $x = 0;
     $y = 0;
 

@@ -24,7 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 *******************************************************************************/
 
-/*global jQuery, window, document, self, alert, PouchDB, _, OAuth, console */
+/*global jQuery, window, document, self, alert, _, console */
 var OCRCorrection = (function($) {
 
   "use strict";

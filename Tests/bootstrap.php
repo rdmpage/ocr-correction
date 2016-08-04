@@ -1,30 +1,30 @@
 <?php
 
-date_default_timezone_set("America/New_York");
-
-function switchConf($restore = false) {
+function switchConf($restore = false)
+{
   $config_dir = dirname(__DIR__) . '/config/';
 
   $conf = array(
-      'prod' => $config_dir . 'config.php',
-      'test' => $config_dir . 'config.test.php'
+    'prod' => $config_dir . 'config.php',
+    'test' => $config_dir . 'config.test.php'
   );
 
   if (!$restore) {
-      if (!file_exists($conf['prod'] . ".old")) {
-          if (file_exists($conf['prod'])) {
-              copy($conf['prod'], $conf['prod'] . ".old");
-          }
-          copy($conf['test'], $conf['prod']);
+    if (!file_exists($conf['prod'] . ".old")) {
+      if (file_exists($conf['prod'])) {
+        copy($conf['prod'], $conf['prod'] . ".old");
       }
+      copy($conf['test'], $conf['prod']);
+    }
   } else {
-      if (file_exists($conf['prod'] . ".old")) {
-          rename($conf['prod'] . ".old", $conf['prod']);
-      }
+    if (file_exists($conf['prod'] . ".old")) {
+      rename($conf['prod'] . ".old", $conf['prod']);
+    }
   }
 }
 
-function requireFiles() {
+function requireFiles()
+{
   $root = dirname(__DIR__);
   require_once $root . '/vendor/autoload.php';
 }
@@ -40,13 +40,15 @@ function warningOn()
   error_reporting(-1);
 }
 
-function loader() {
+function loader()
+{
   switchConf();
   requireFiles();
   warningOff();
 }
 
-function unloader() {
+function unloader()
+{
   switchConf('restore');
   warningOn();
 }
