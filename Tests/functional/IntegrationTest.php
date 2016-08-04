@@ -32,7 +32,7 @@ class IntegrationTest extends TestCase {
   public function testPageTitle() {
     $this->webDriver->get($this->base_url);
     $title = $this->webDriver->getTitle();
-    $this->assertEquals('OCR Correction', $title);
+    $this->assertEquals('OCR Correction', $webdriver->getPageSource());
   }
 }
 ?>
