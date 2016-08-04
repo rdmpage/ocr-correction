@@ -71,7 +71,7 @@ before_script:
 
   # Selenium
   - sh -e .travis/scripts/selenium.sh
-  - sleep 3
+  - sleep 5
 
 script:
   - travis_retry php vendor/bin/phpunit -c Tests/$BROWSER.phpunit.xml --stderr
