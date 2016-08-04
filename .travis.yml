@@ -22,7 +22,6 @@ before_install:
 
 install:
   # PHP configuration
-  - phpenv config-rm xdebug.ini
   - phpenv config-add .travis/travis.php.ini
   - phpenv rehash
 
