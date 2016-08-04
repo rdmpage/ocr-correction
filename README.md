@@ -43,7 +43,7 @@ If you use something like www.ocr-correction.local for the ServerName, don't for
 
 Use the included, self-executable command-line utility to create the database and two necessary views:
 
-  ./bin/initialize.php --create
+  $ ./bin/initialize.php --create
 
 ## Page images and DjVu XML files
 
@@ -64,16 +64,25 @@ http://www.ocr-correction.local/16002437
 PHPUnit is used for unit tests and [Selenium](http://selenium-release.storage.googleapis.com/index.html?path=2.53/) and Facebook's [php-webdriver](https://github.com/facebook/php-webdriver) are used for integration tests. [Composer](https://getcomposer.org/) is used to include dependencies.
 
     $ java -jar selenium-server-standalone-2.53.1.jar
+
+Then from a second terminal window:
+
     $ ./vendor/bin/phpunit -c Tests/firefox.phpunit.xml
 
 If you wish to use Chrome instead of FireFox, the Selenium Chromedriver can be found at [http://chromedriver.storage.googleapis.com/index.html](http://chromedriver.storage.googleapis.com/index.html):
 
     $ java -jar selenium-server-standalone-2.53.1.jar -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver
+
+Then from a second terminal window:
+
     $ ./vendor/bin/phpunit -c Tests/chrome.phpunit.xml
 
 Likewise, if you wish to use a headless webdriver such as [PhantomJS](http://phantomjs.org/):
 
     $ java -jar selenium-server-standalone-2.53.1 -Dphantomjs.binary.path=/usr/local/bin/phantomjs
+
+Then from a second terminal window:
+
     $ ./vendor/bin/phpunit -c Tests/phantomjs.phpunit.xml
 
 Tests are split into suites entitled, "Unit", "Functional"
