@@ -7,6 +7,8 @@ The [hackathon](http://www.naturalis.nl/en/news/bioinformatics/hackathon-nutshel
 
 [![Build Status](https://secure.travis-ci.org/dshorthouse/ocr-correction.png?branch=master)](http://travis-ci.org/dshorthouse/ocr-correction)
 
+![OCR Correction](public/img/screenshot.png)
+
 ## Requirements & Dependencies
 
 This code requires [CouchDB](http://couchdb.apache.org), PHP 5.6+, and a local web server such as Apache with mod\_rewrite enabled. Install all necessary dependencies using [composer](https://getcomposer.org) and update them as required from the ocr-correction source directory.
