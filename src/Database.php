@@ -95,12 +95,22 @@ class Database
     $this->_link->createDesignDocument('textDiff', new TextDiffDesignDocument());
   }
 
-  public function getPageDocuments($id)
+  public function getPageEdits($id)
   {
     $query = $this->_link->createViewQuery('page', 'edits');
     $query->setIncludeDocs(true);
     $query->setStartKey(array($id));
     $query->setEndKey(array($id, time()));
+    $result = $query->execute();
+    return $result->toArray();
+  }
+
+  public function getPageDocuments($id)
+  {
+    $query = $this->_link->createViewQuery('page', 'all');
+    $query->setIncludeDocs(false);
+    $query->setStartKey(array($id));
+    $query->setEndKey(array($id, "{}"));
     $result = $query->execute();
     return $result->toArray();
   }
@@ -113,10 +123,10 @@ class Database
     return $result->toArray();
   }
 
-  public function postPageDocument($content)
+  public function postPageDocument($content, $type = "edit")
   {
     return $this->_link->postDocument(array(
-      'type' => 'edit',
+      'type' => $type,
       'time' => (int)$content['time'],
       'pageId' => (int)$content['pageId'],
       'lineId' => (int)$content['lineId'],

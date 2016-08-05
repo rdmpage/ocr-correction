@@ -102,7 +102,7 @@ class Router
   private function _edits($id)
   {
     $db = Database::getInstance();
-    $docs = $db->getPageDocuments((int)$id);
+    $docs = $db->getPageEdits((int)$id);
     header('Content-Type: application/json');
     echo json_encode($docs);
   }

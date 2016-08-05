@@ -1,7 +1,6 @@
-OCR correction in browser for Leiden Hackathon
-==============================================
+# OCR correction in browser for Leiden Hackathon
 
-A web interface for correcting OCR text from the Biodiversity Heritage Library as DjVu XML files and corresponding full page png images. The goal is to provide a simple interface for interactive editing of text, as well as tools to make inferences from the edits (e.g., frequency of certain kinds of OCR errors).
+A web interface for correcting OCR text from the Biodiversity Heritage Library (DjVu XML files and full page png images) and stored in CouchDB. The goal is to provide a simple interface for interactive editing of text, as well as tools to make inferences from the edits (e.g., frequency of certain kinds of OCR errors).
 
 The [hackathon](http://www.naturalis.nl/en/news/bioinformatics/hackathon-nutshell/) took place March 2014 in Leiden, the Netherlands and was sponsored by [Naturalis Biodiversity Center](http://www.naturalis.nl/) and [pro-iBiosphere](http://www.pro-ibiosphere.eu/). See the [follow-up paper](http://doi.org/10.3897/BDJ.2.e1125) in the Biodiversity Data Journal.
 
@@ -20,8 +19,7 @@ This code requires [CouchDB](http://couchdb.apache.org), PHP 5.6+, and a local w
 
 Rename /config/config.php.sample to /config/config.php and adjust as necessary
 
-Example Apache VirtualHost
---------------------------
+### Example Apache VirtualHost
 
     <VirtualHost *:80>
       ServerName www.ocr-correction.local
@@ -43,24 +41,44 @@ Example Apache VirtualHost
 
 If you use something like www.ocr-correction.local for the ServerName, don't forget to adjust your /etc/hosts file.
 
+## Initialization
+
 ### Create database and views
 
 Use the included, self-executable command-line utility to create the database and two necessary views:
 
     $ ./bin/initialize.php --create
 
-## Page images and DjVu XML files
+### Page images and DjVu XML files
 
-You can fetch page images and DjVu XML from BioStor.
+You can fetch page images and DjVu XML from BioStor. Samples are included in /public/examples.
 
 [http://biostor.org/bhl_page_xml.php?PageID=34570741](http://biostor.org/bhl_page_xml.php?PageID=34570741)  
 [http://biostor.org/bhl_page_bw_image.php?PageID=34570741](http://biostor.org/bhl_page_bw_image.php?PageID=34570741)
+
+### Seed the database
+
+Load all the original line text for each page into the database. This is necessary if you wish to later export OCR text files, merged with user edits.
+
+    $ ./bin/initialize.php --seed --directory [dir of DjVu xml files, defaults to /public/examples]
+
+### Destroy the database
+
+Useful if you want to start all over again.
+
+    $ ./bin/initialize.php --destroy
 
 ## Running in the Browser
 
 Assuming your application is running via www.ocr-correction.local, you can access the included /public/examples by appending the PageId as part of the path:
 
 http://www.ocr-correction.local/16002437
+
+## Export edits from the database
+
+Use the included, self-executable command-line utility to export original OCR text (see Seed the Database above), merged with edits as a text file.
+
+    $ ./bin/export.php --pageid 16002437 --directory [dir for output, defaults to /public/examples]
 
 ## Tests
 
