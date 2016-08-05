@@ -77,20 +77,19 @@ class Router
 
   private function _main($id)
   {
-    $page_width = 800;
-    $xml_filename = "public/examples/{$id}.xml";
-    $image_filename = "public/examples/{$id}.png";
+    $xml_file = DJVU_PATH . "{$id}.xml";
+    $img_file = DJVU_PATH . "{$id}.png";
 
     try {
-      $djvu = new DjVuView($xml_filename);
+      $djvu = new DjVuView($xml_file);
       $djvu->setImageWidth(800)
-           ->setImageURL($image_filename)
+           ->setImageURL($img_file)
            ->addFontmetrics()
            ->addLines();
 
       $config = array(
         'id' => $id,
-        'image_filename' => $image_filename,
+        'image_filename' => $img_file,
         'content' => $djvu->createHTML(PERMIT_ANON)
       );
       return $this->_twig()->render("main.html", $config);
