@@ -40,7 +40,8 @@
       "doctrine/couchdb"         : "@dev",
       "phroute/phroute"          : "2.*",
       "twig/twig"                : "~1.0",
-      "chh/optparse"             : "*@dev"
+      "chh/optparse"             : "*@dev",
+      "lusitanian/oauth"         : "~0.3"
     },
     "require-dev": {
       "phpunit/phpunit"          : "5.4.*",

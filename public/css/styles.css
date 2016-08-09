@@ -10,9 +10,15 @@ body {
   padding-left:40px;
 }
 
-.btn-google_plus, .btn-google_plus:active { background-image:url("../img/logo-google-plus.png"); background-color:#C8311E; }
+.btn-google, .btn-google:active { background-image:url("../img/logo-google-plus.png"); background-color:#C8311E; }
 .btn-github, .btn-github:active { background-image:url("../img/logo-github.png"); }
 .btn-twitter, .btn-twitter:active { background-image:url("../img/logo-twitter.png"); }
+
+#mug-shot {
+  height: 32px;
+  padding-top:4px;
+  
+}
 
 #ocr_content {
   position:relative;

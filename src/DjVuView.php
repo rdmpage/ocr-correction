@@ -136,7 +136,7 @@ class DjVuView extends DjVu {
   {
 
     $editable = ($anon || $anon == 'true') ? 'true' : 'false';
-    if(isset($_COOKIE['ocr_correction'])) {
+    if(isset($_COOKIE['ocr-correction'])) {
       $editable = 'true';
     }
 

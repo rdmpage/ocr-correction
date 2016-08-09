@@ -30,6 +30,10 @@ defined("DJVU_PATH") || define("DJVU_PATH", "public/examples/");
 // Allow (or not) anonymous editing
 defined("PERMIT_ANON") || define("PERMIT_ANON", true);
 
+defined("OAUTH_KEY") || define("OAUTH_KEY", "");
+
+defined("OAUTH_SECRET") || define("OAUTH_SECRET", "");
+
 date_default_timezone_set('UTC');
 mb_internal_encoding("UTF-8");
 mb_http_output("UTF-8");

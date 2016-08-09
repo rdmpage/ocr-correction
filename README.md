@@ -80,6 +80,10 @@ Use the included, self-executable command-line utility to export original OCR te
 
     $ ./bin/export.php --pageid 16002437 --directory [dir for output, defaults to /public/examples]
 
+## User Accounts & Identity
+
+User authentication is accomplished through Google's OAuth2 using [PHPoAuthLib](https://github.com/Lusitanian/PHPoAuthLib). Create credentials for a web application at the [Google API Console](https://console.developers.google.com/) and fill-in the OAUTH\_KEY and OAUTH\_SECRET in /config/config.php.
+
 ## Tests
 
 PHPUnit is used for unit tests and [Selenium](http://selenium-release.storage.googleapis.com/index.html?path=2.53/) and Facebook's [php-webdriver](https://github.com/facebook/php-webdriver) are used for integration tests. [Composer](https://getcomposer.org/) is used to include dependencies.

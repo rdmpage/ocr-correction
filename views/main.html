@@ -34,6 +34,16 @@ $(function() {
         </a>
         <a class="brand" href=".">OCR Correction of BHL Documents (DEMO)</a>
         <div class="nav-collapse pull-right">
+          {% if session %}
+            {% if session['userAvatar'] %}
+              <img src="{{ session['userAvatar'] }}" id="mug-shot" />
+            {% else %}
+              {{ session['userName'] }}
+            {% endif %}
+            <a href="/session?go=logout" class="btn btn-danger">Sign Out</a>
+          {% else %}
+            <a href="/session?go=go" class="btn btn-primary btn-google">Sign In</a>
+          {% endif %}
         </div>
      </div>
     </div>

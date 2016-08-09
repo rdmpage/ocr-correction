@@ -61,6 +61,10 @@ class Router
       return $this->_edit($_POST);
     });
 
+    $router->get('/session', function () {
+      return $this->_session();
+    });
+
     $router->get('/textreplacement', function () {
       return $this->_textReplacements();
     });
@@ -87,10 +91,13 @@ class Router
            ->addFontmetrics()
            ->addLines();
 
+      $session = (isset($_COOKIE["ocr-correction"])) ? json_decode($_COOKIE["ocr-correction"], true) : [];
+
       $config = array(
         'id' => $id,
         'image_filename' => $img_file,
-        'content' => $djvu->createHTML(PERMIT_ANON)
+        'content' => $djvu->createHTML(PERMIT_ANON),
+        'session' => $session
       );
       return $this->_twig()->render("main.html", $config);
     } catch (\Exception $e) {
@@ -121,7 +128,13 @@ class Router
     header('Content-Type: application/json');
     echo json_encode($docs);
   }
-    
+
+  private function _session()
+  {
+    $session = new Session();
+    echo $session->init();
+  }
+
   /**
    * Load twig templating engine
    *

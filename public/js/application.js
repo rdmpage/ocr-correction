@@ -51,12 +51,18 @@ var OCRCorrection = (function($) {
       before_text : "",
       user: { userAvatar : "", userName : "", userUrl : "" },
       gnrd_resource : "http://gnrd.globalnames.org/name_finder.json",
+      oauth_profile_url : {
+        google_plus : "/plus/v1/people/me",
+        github : "user",
+        twitter : "/1.1/account/verify_credentials.json"
+      }
     },
 
     initialize: function() {
       $.cookie.json = true;
       this.setVariables();
       this.setFontSize();
+      this.loadUser();
       this.bindActions();
       this.getEdits();
       if (this.settings.show_replacements) { this.getTextReplacements(); }
@@ -112,6 +118,11 @@ var OCRCorrection = (function($) {
       });
     },
 
+    loadUser: function() {
+      var user = $.cookie("ocr-correction");
+      if(user) { this.vars.user = user; }
+    },
+
     setUserDefaults: function(obj) {
       if(!obj.userName) { obj.userName = "Anonymous"; }
       if(!obj.userUrl) { obj.userUrl = "#"; }
@@ -152,7 +163,10 @@ var OCRCorrection = (function($) {
           pageId: this.settings.page_id,
           lineId: parseInt($(ele).attr("id").replace("line", ""), 10),
           ocr: $(ele).attr("data-ocr"),
-          text: after_text
+          text: after_text,
+          userName : this.vars.user.userName,
+          userAvatar: this.vars.user.userAvatar,
+          userUrl: this.vars.user.userUrl
         };
         $.ajax({
           type: "POST",

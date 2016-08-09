@@ -131,7 +131,10 @@ class Database
       'pageId' => (int)$content['pageId'],
       'lineId' => (int)$content['lineId'],
       'ocr' => $content['ocr'],
-      'text' => $content['text']
+      'text' => $content['text'],
+      'userName' => (array_key_exists('userName', $content)) ? $content['userName'] : null,
+      'userAvatar' => (array_key_exists('userAvatar', $content)) ? $content['userAvatar'] : null,
+      'userUrl' => (array_key_exists('userUrl', $content)) ? $content['userUrl'] : null
     ));
   }
 
